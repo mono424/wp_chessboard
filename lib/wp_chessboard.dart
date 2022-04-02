@@ -1,11 +1,13 @@
 library wp_chessboard;
 
 import 'package:flutter/material.dart';
+import 'package:wp_chessboard/components/drop_targets.dart';
 import 'package:wp_chessboard/components/hints.dart';
 import 'package:wp_chessboard/components/pieces.dart';
 import 'package:wp_chessboard/components/squares.dart';
 import 'package:wp_chessboard/models/chess_state.dart';
 import 'package:wp_chessboard/models/hint_map.dart';
+import 'package:wp_chessboard/models/piece_drop_event.dart';
 import 'package:wp_chessboard/models/square_info.dart';
 
 import 'models/piece_map.dart';
@@ -16,9 +18,10 @@ class WPChessboard extends StatefulWidget {
   final PieceMap pieceMap;
   final WPChessboardController controller;
   final void Function(SquareInfo file, String piece)? onPieceTap;
+  final void Function(PieceDropEvent)? onPieceDrop;
 
 
-  const WPChessboard({Key? key, required this.size, required this.squareBuilder, required this.pieceMap, required this.controller, this.onPieceTap}) : super(key: key);
+  const WPChessboard({Key? key, required this.size, required this.squareBuilder, required this.pieceMap, required this.controller, this.onPieceTap, this.onPieceDrop}) : super(key: key);
 
   @override
   State<WPChessboard> createState() => _WPChessboardState();
@@ -82,6 +85,13 @@ class _WPChessboardState extends State<WPChessboard> {
             child: Hints(
               size: widget.size,
               hints: hints,
+            ),
+          ),
+
+          Positioned.fill(
+            child: DropTargets(
+              size: widget.size,
+              onPieceDrop: widget.onPieceDrop,
             ),
           ),
         ],

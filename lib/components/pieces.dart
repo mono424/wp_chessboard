@@ -26,12 +26,20 @@ class Pieces extends StatelessWidget {
           double left = (info.file - 1) * squareSize;
           double bottom = (info.rank - 1) * squareSize;
 
-          return piece == "" ? const SizedBox() : Positioned(
+          if (piece == "") return const SizedBox();
+
+          Widget pieceWidget = pieceMap.get(piece)(squareSize);
+
+          return Positioned(
             bottom: bottom,
             left: left,
             child: GestureDetector(
               onTapDown: onPieceTap != null ? (_) => onPieceTap!(info, piece) : null,
-              child: pieceMap.get(piece)(squareSize),
+              child: Draggable<SquareInfo>(
+                data: info,
+                feedback: pieceWidget,
+                child: pieceWidget,
+              )
             ),
           );
         }

@@ -4,12 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:wp_chessboard/models/piece_drop_event.dart';
 import 'package:wp_chessboard/models/square_info.dart';
 
-class Squares extends StatelessWidget {
+class DropTargets extends StatelessWidget {
   final double size;
-  final Widget Function(SquareInfo) squareBuilder;
   final void Function(PieceDropEvent)? onPieceDrop;
 
-  const Squares({Key? key, required this.size, required this.squareBuilder, this.onPieceDrop}) : super(key: key);
+  const DropTargets({Key? key, required this.size, this.onPieceDrop}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +35,7 @@ class Squares extends StatelessWidget {
                 }
               },
               builder: (
-                (context, candidateData, rejectedData) => squareBuilder(info)
+                (context, candidateData, rejectedData) => SizedBox(width: squareSize, height: squareSize)
               ),
             ),
           );

@@ -3,6 +3,7 @@ import 'package:chess_vectors_flutter/chess_vectors_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:wp_chessboard/components/hints/move_hint.dart';
 import 'package:wp_chessboard/models/hint_map.dart';
+import 'package:wp_chessboard/models/piece_drop_event.dart';
 import 'package:wp_chessboard/models/piece_map.dart';
 import 'package:wp_chessboard/models/square_info.dart';
 import 'package:wp_chessboard/wp_chessboard.dart';
@@ -47,6 +48,11 @@ class _MyAppState extends State<MyApp> {
     controller.setHints(hintMap);
   }
 
+  void onPieceDrop(PieceDropEvent event) {
+    chess.move({ "from": event.from.toString(), "to": event.to.toString() });
+    update();
+  }
+
   void doMove(Chess.Move move) {
     chess.move(move);
     update();
@@ -84,6 +90,7 @@ class _MyAppState extends State<MyApp> {
                   size: size,
                   squareBuilder: squareBuilder,
                   controller: controller,
+                  onPieceDrop: onPieceDrop,
                   onPieceTap: onPieceTap,
                   pieceMap: PieceMap(
                     K: (size) => WhiteKing(size: size),
