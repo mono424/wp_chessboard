@@ -9,9 +9,10 @@ class Pieces extends StatelessWidget {
   final double size;
   final PieceMap pieceMap;
   final ChessState state;
-  final void Function(SquareInfo file, String piece)? onPieceTap;
+  final void Function(SquareInfo square, String piece)? onPieceTap;
+  final void Function(SquareInfo square)? onEmptyFieldTap;
 
-  const Pieces({Key? key, required this.size, required this.pieceMap, required this.state, this.onPieceTap}) : super(key: key);
+  const Pieces({Key? key, required this.size, required this.pieceMap, required this.state, this.onPieceTap, this.onEmptyFieldTap}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +27,20 @@ class Pieces extends StatelessWidget {
           double left = (info.file - 1) * squareSize;
           double bottom = (info.rank - 1) * squareSize;
 
-          if (piece == "") return const SizedBox();
+          if (piece == "") {
+            return Positioned(
+              bottom: bottom,
+              left: left,
+              child: GestureDetector(
+                onTapDown: onEmptyFieldTap != null ? (_) => onEmptyFieldTap!(info) : null,
+                child: Container(
+                  color: Colors.transparent,
+                  width: squareSize,
+                  height: squareSize,
+                )
+              ),
+            );
+          }
 
           Widget pieceWidget = pieceMap.get(piece)(squareSize);
 

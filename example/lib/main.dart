@@ -48,6 +48,10 @@ class _MyAppState extends State<MyApp> {
     controller.setHints(hintMap);
   }
 
+  void onEmptyFieldTap(SquareInfo square) {
+    controller.setHints(HintMap());
+  }
+
   void onPieceDrop(PieceDropEvent event) {
     chess.move({ "from": event.from.toString(), "to": event.to.toString() });
     update();
@@ -92,6 +96,7 @@ class _MyAppState extends State<MyApp> {
                   controller: controller,
                   onPieceDrop: onPieceDrop,
                   onPieceTap: onPieceTap,
+                  onEmptyFieldTap: onEmptyFieldTap,
                   pieceMap: PieceMap(
                     K: (size) => WhiteKing(size: size),
                     Q: (size) => WhiteQueen(size: size),

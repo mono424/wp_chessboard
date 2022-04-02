@@ -17,11 +17,12 @@ class WPChessboard extends StatefulWidget {
   final Widget Function(SquareInfo) squareBuilder;
   final PieceMap pieceMap;
   final WPChessboardController controller;
-  final void Function(SquareInfo file, String piece)? onPieceTap;
+  final void Function(SquareInfo square)? onEmptyFieldTap;
+  final void Function(SquareInfo square, String piece)? onPieceTap;
   final void Function(PieceDropEvent)? onPieceDrop;
 
 
-  const WPChessboard({Key? key, required this.size, required this.squareBuilder, required this.pieceMap, required this.controller, this.onPieceTap, this.onPieceDrop}) : super(key: key);
+  const WPChessboard({Key? key, required this.size, required this.squareBuilder, required this.pieceMap, required this.controller, this.onPieceTap, this.onPieceDrop, this.onEmptyFieldTap}) : super(key: key);
 
   @override
   State<WPChessboard> createState() => _WPChessboardState();
@@ -77,7 +78,8 @@ class _WPChessboardState extends State<WPChessboard> {
               size: widget.size,
               pieceMap: widget.pieceMap,
               state: ChessState(fen),
-              onPieceTap: widget.onPieceTap
+              onPieceTap: widget.onPieceTap,
+              onEmptyFieldTap: widget.onEmptyFieldTap
             ),
           ),
 
