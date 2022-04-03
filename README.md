@@ -22,7 +22,7 @@ Also animation for whole position changes/resets.
 
 Display hints to show possible moves.
 
-![Hints](https://github.com/mono424/wp_chessboard/blob/main/images/hints.png?raw=true)
+![Hints](https://github.com/mono424/wp_chessboard/blob/main/images/hints.gif?raw=true)
 
 
 ## Usage
