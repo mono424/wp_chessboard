@@ -2,7 +2,7 @@
 
 ![Chessboard](https://github.com/mono424/wp_chessboard/blob/main/images/board.png?raw=true)
 
-A very customizable Chessboard with awesome already onboard:
+A very customizable Chessboard with awesomeness already onboard:
 
 👇️ Dragable Pieces
 
