@@ -17,27 +17,28 @@ class WPChessboard extends StatefulWidget {
   final Widget Function(SquareInfo) squareBuilder;
   final PieceMap pieceMap;
   final WPChessboardController controller;
-  final void Function(SquareInfo square)? onEmptyFieldTap;
   final void Function(SquareInfo square, String piece)? onPieceTap;
+  final void Function(SquareInfo square, String piece)? onPieceStartDrag;
+  final void Function(SquareInfo square)? onEmptyFieldTap;
   final void Function(PieceDropEvent)? onPieceDrop;
 
 
-  const WPChessboard({Key? key, required this.size, required this.squareBuilder, required this.pieceMap, required this.controller, this.onPieceTap, this.onPieceDrop, this.onEmptyFieldTap}) : super(key: key);
+  const WPChessboard({Key? key, required this.size, required this.squareBuilder, required this.pieceMap, required this.controller, this.onPieceTap, this.onPieceDrop, this.onEmptyFieldTap, this.onPieceStartDrag}) : super(key: key);
 
   @override
   State<WPChessboard> createState() => _WPChessboardState();
 }
 
 class _WPChessboardState extends State<WPChessboard> {
-  String fen = "";
+  ChessState state = ChessState("");
   HintMap hints = HintMap();
 
   @override
   void initState() {
-    fen = widget.controller.fen;
+    state = widget.controller.state;
     widget.controller.addListener(() {
-      if (fen != widget.controller.fen) {
-        onUpdateFen(widget.controller.fen);
+      if (state.fen != widget.controller.state.fen) {
+        onUpdateState(widget.controller.state);
       }
       if (hints.id != widget.controller.hints.id) {
         onUpdateHints(widget.controller.hints);
@@ -46,9 +47,9 @@ class _WPChessboardState extends State<WPChessboard> {
     super.initState();
   }
 
-  void onUpdateFen(String newFen) {
+  void onUpdateState(ChessState newState) {
     setState(() {
-      fen = newFen;
+      state = newState;
     });
   }
 
@@ -74,17 +75,19 @@ class _WPChessboardState extends State<WPChessboard> {
 
           Positioned.fill(
             child: Pieces(
-              key: Key("squares_" + widget.size.toString() + "_" + fen),
+              key: Key("squares_" + widget.size.toString() + "_" + state.fen),
               size: widget.size,
               pieceMap: widget.pieceMap,
-              state: ChessState(fen),
+              state: state,
               onPieceTap: widget.onPieceTap,
+              onPieceStartDrag: widget.onPieceStartDrag,
               onEmptyFieldTap: widget.onEmptyFieldTap
             ),
           ),
 
           Positioned.fill(
             child: Hints(
+              key: Key(hints.id.toString()),
               size: widget.size,
               hints: hints,
             ),
@@ -103,16 +106,22 @@ class _WPChessboardState extends State<WPChessboard> {
 }
 
 class WPChessboardController extends ChangeNotifier {
-  String fen = "";
+  ChessState state = ChessState("");
   HintMap hints = HintMap();
 
-  WPChessboardController({ this.fen = "" });
+  WPChessboardController();
 
-  void setFen(String value, { bool resetHints = true }) {
-    fen = value;
+  void setFen(String value, { bool resetHints = true, bool newGame = false }) {
+    if (newGame) {
+      state = ChessState(value, last: null);
+    } else {
+      state = ChessState(value, last: state);
+    }
+
     if (resetHints) {
       hints = HintMap();
     }
+
     notifyListeners();
   }
 

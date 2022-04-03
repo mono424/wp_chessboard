@@ -1,15 +1,13 @@
 library wp_chessboard;
 
 import 'package:flutter/material.dart';
-import 'package:wp_chessboard/models/piece_drop_event.dart';
 import 'package:wp_chessboard/models/square_info.dart';
 
 class Squares extends StatelessWidget {
   final double size;
   final Widget Function(SquareInfo) squareBuilder;
-  final void Function(PieceDropEvent)? onPieceDrop;
 
-  const Squares({Key? key, required this.size, required this.squareBuilder, this.onPieceDrop}) : super(key: key);
+  const Squares({Key? key, required this.size, required this.squareBuilder}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,19 +24,7 @@ class Squares extends StatelessWidget {
           return Positioned(
             bottom: bottom,
             left: left,
-            child: DragTarget<SquareInfo>(
-              onWillAccept: (data) {
-                return data != null && data.index != info.index;
-              },
-              onAccept: (data) {
-                if (onPieceDrop != null) {
-                  onPieceDrop!(PieceDropEvent(data, info));
-                }
-              },
-              builder: (
-                (context, candidateData, rejectedData) => squareBuilder(info)
-              ),
-            ),
+            child: squareBuilder(info)
           );
         }
       ).toList(),

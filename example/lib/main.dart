@@ -32,7 +32,15 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
+  void onPieceStartDrag(SquareInfo square, String piece) {
+    showHintFields(square, piece);
+  }
+
   void onPieceTap(SquareInfo square, String piece) {
+    showHintFields(square, piece);
+  }
+
+  void showHintFields(SquareInfo square, String piece) {
     final moves = chess.generate_moves({ 'square': square.toString() });
     final hintMap = HintMap();
     for (var move in moves) {
@@ -96,6 +104,7 @@ class _MyAppState extends State<MyApp> {
                   controller: controller,
                   onPieceDrop: onPieceDrop,
                   onPieceTap: onPieceTap,
+                  onPieceStartDrag: onPieceStartDrag,
                   onEmptyFieldTap: onEmptyFieldTap,
                   pieceMap: PieceMap(
                     K: (size) => WhiteKing(size: size),
