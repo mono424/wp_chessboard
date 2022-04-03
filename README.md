@@ -1,39 +1,71 @@
-<!-- 
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# WP_CHESSBOARD
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages). 
+![Chessboard](https://github.com/mono424/wp_chessboard/blob/main/images/board.png?raw=true)
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages). 
--->
+A very customizable Chessboard with awesome already onboard:
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+👇️ Dragable Pieces
+
+🎬️ Move Animations
+
+💡 Hint Overlays
 
 ## Features
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+Animations already onboard.
 
-## Getting started
+![Hints](https://github.com/mono424/wp_chessboard/blob/main/images/animate-single?raw=true)
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+![Hints](https://github.com/mono424/wp_chessboard/blob/main/images/animate-many?raw=true)
+
+Display hints to show possible moves.
+
+![Hints](https://github.com/mono424/wp_chessboard/blob/main/images/hints.png?raw=true)
+
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder. 
+First import the `WPChessboard` widget and the `PieceMap` class.
+```dart
+import 'package:wp_chessboard/wp_chessboard.dart';
+import 'package:wp_chessboard/models/piece_map.dart';
+```
+
+Then, you are ready to use it
+
+> You can use your own piece set, in the example we will
+> use the `chess_vectors_flutter` package.
 
 ```dart
-const like = 'sample';
+WPChessboard(
+    size: size,
+    squareBuilder: squareBuilder,
+    controller: controller,
+    onPieceDrop: onPieceDrop,
+    onPieceTap: onPieceTap,
+    onPieceStartDrag: onPieceStartDrag,
+    onEmptyFieldTap: onEmptyFieldTap,
+    pieceMap: PieceMap(
+        K: (size) => WhiteKing(size: size),
+        Q: (size) => WhiteQueen(size: size),
+        B: (size) => WhiteBishop(size: size),
+        N: (size) => WhiteKnight(size: size),
+        R: (size) => WhiteRook(size: size),
+        P: (size) => WhitePawn(size: size),
+        k: (size) => BlackKing(size: size),
+        q: (size) => BlackQueen(size: size),
+        b: (size) => BlackBishop(size: size),
+        n: (size) => BlackKnight(size: size),
+        r: (size) => BlackRook(size: size),
+        p: (size) => BlackPawn(size: size),
+    ),
+),
 ```
+
+I know this is very short, for more information checkout the example :).
 
 ## Additional information
 
-TODO: Tell users more about the package: where to find more information, how to 
-contribute to the package, how to file issues, what response they can expect 
-from the package authors, and more.
+Every contribution is very welcome.
+
+Cheers 🥂
