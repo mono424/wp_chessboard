@@ -68,14 +68,14 @@ class _WPChessboardState extends State<WPChessboard> {
       child: Stack(
         children: [
           Squares(
-            key: Key("squares_" + widget.size.toString()),
+            key: Key("squares_" + widget.size.toString() + "_" + state.fen),
             size: widget.size,
             squareBuilder: widget.squareBuilder,
           ),
 
           Positioned.fill(
             child: Pieces(
-              key: Key("squares_" + widget.size.toString() + "_" + state.fen),
+              key: Key("pieces_" + widget.size.toString() + "_" + state.fen),
               size: widget.size,
               pieceMap: widget.pieceMap,
               state: state,

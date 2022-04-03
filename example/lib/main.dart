@@ -23,12 +23,31 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final controller = WPChessboardController();
   Chess.Chess chess = Chess.Chess();
+  List<List<int>>? lastMove;
 
+  // not working on drop
   Widget squareBuilder(SquareInfo info) {
+    Color fieldColor = (info.index + info.rank) % 2 == 0 ? Colors.grey.shade200 : Colors.grey.shade600;
+    Color overlayColor = Colors.transparent;
+
+    if (lastMove != null ) {
+      if (lastMove!.first.first == info.rank && lastMove!.first.last == info.file) {
+        overlayColor = Colors.blueAccent.shade400.withOpacity(0.4);
+      } else if (lastMove!.last.first == info.rank && lastMove!.last.last == info.file) {
+        overlayColor = Colors.blueAccent.shade400.withOpacity(0.87);
+      }
+    }
+
     return Container(
-      color: (info.index + info.rank) % 2 == 0 ? Colors.grey.shade200 : Colors.grey.shade600,
+      color: fieldColor,
       width: info.size,
       height: info.size,
+      child: AnimatedContainer(
+        color: overlayColor,
+        width: info.size,
+        height: info.size,
+        duration: const Duration(milliseconds: 200),
+      )
     );
   }
 
@@ -62,14 +81,29 @@ class _MyAppState extends State<MyApp> {
 
   void onPieceDrop(PieceDropEvent event) {
     chess.move({ "from": event.from.toString(), "to": event.to.toString() });
+    
+    lastMove = [
+      [ event.from.rank, event.from.file ],
+      [ event.to.rank, event.to.file ]
+    ];
+
     update(animated: false);
   }
 
   void doMove(Chess.Move move) {
     chess.move(move);
+    
+    int rankFrom = move.fromAlgebraic.codeUnitAt(1) - "1".codeUnitAt(0) + 1;
+    int fileFrom = move.fromAlgebraic.codeUnitAt(0) - "a".codeUnitAt(0) + 1;
+    int rankTo = move.toAlgebraic.codeUnitAt(1) - "1".codeUnitAt(0) + 1;
+    int fileTo = move.toAlgebraic.codeUnitAt(0) - "a".codeUnitAt(0) + 1;
+    lastMove = [
+      [ rankFrom, fileFrom ],
+      [ rankTo, fileTo ]
+    ];
+
     update();
   }
-
   void setDefaultFen() {
     setState(() {
       chess = Chess.Chess.fromFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1");
