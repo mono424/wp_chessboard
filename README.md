@@ -12,15 +12,15 @@ A very customizable Chessboard with awesomeness already onboard:
 
 ## Features
 
-Animations already onboard.
+### 🎬️ Piece Animations for Single Moves
 
 ![Animate-Single](https://github.com/mono424/wp_chessboard/blob/main/images/animate-single.gif?raw=true)
 
-Also animation for whole position changes/resets.
+### 🎬️ Piece Animations for position changes/reset
 
 ![Animate-Many](https://github.com/mono424/wp_chessboard/blob/main/images/animate-many.gif?raw=true)
 
-Display hints to show possible moves.
+### 💡 Display Hints as overlay
 
 ![Hints](https://github.com/mono424/wp_chessboard/blob/main/images/hints.gif?raw=true)
 
