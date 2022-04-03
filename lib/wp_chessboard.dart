@@ -81,7 +81,8 @@ class _WPChessboardState extends State<WPChessboard> {
               state: state,
               onPieceTap: widget.onPieceTap,
               onPieceStartDrag: widget.onPieceStartDrag,
-              onEmptyFieldTap: widget.onEmptyFieldTap
+              onEmptyFieldTap: widget.onEmptyFieldTap,
+              animated: widget.controller.shouldAnimate
             ),
           ),
 
@@ -108,10 +109,13 @@ class _WPChessboardState extends State<WPChessboard> {
 class WPChessboardController extends ChangeNotifier {
   ChessState state = ChessState("");
   HintMap hints = HintMap();
+  bool shouldAnimate = true;
 
   WPChessboardController();
 
-  void setFen(String value, { bool resetHints = true, bool newGame = false }) {
+  void setFen(String value, { bool resetHints = true, bool newGame = false, bool animation = true }) {
+    shouldAnimate = animation;
+
     if (newGame) {
       state = ChessState(value, last: null);
     } else {

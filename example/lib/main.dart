@@ -62,7 +62,7 @@ class _MyAppState extends State<MyApp> {
 
   void onPieceDrop(PieceDropEvent event) {
     chess.move({ "from": event.from.toString(), "to": event.to.toString() });
-    update();
+    update(animated: false);
   }
 
   void doMove(Chess.Move move) {
@@ -84,8 +84,8 @@ class _MyAppState extends State<MyApp> {
     update();
   }
 
-  void update() {
-    controller.setFen(chess.fen);
+  void update({bool animated = true}) {
+    controller.setFen(chess.fen, animation: animated);
   }
 
   @override

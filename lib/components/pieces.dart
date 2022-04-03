@@ -13,8 +13,9 @@ class Pieces extends StatelessWidget {
   final void Function(SquareInfo square, String piece)? onPieceTap;
   final void Function(SquareInfo square, String piece)? onPieceStartDrag;
   final void Function(SquareInfo square)? onEmptyFieldTap;
+  final bool animated;
 
-  const Pieces({Key? key, required this.size, required this.pieceMap, required this.state, this.onPieceTap, this.onEmptyFieldTap, this.onPieceStartDrag}) : super(key: key);
+  const Pieces({Key? key, required this.size, required this.pieceMap, required this.state, this.onPieceTap, this.onEmptyFieldTap, this.onPieceStartDrag, required this.animated}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +52,7 @@ class Pieces extends StatelessWidget {
             key: Key(pieceEntry.getKey()),
             squareSize: squareSize,
             stateEntry: pieceEntry,
+            animated: animated,
             child: GestureDetector(
               onTapDown: onPieceTap != null ? (_) => onPieceTap!(info, pieceEntry.piece) : null,
               child: Draggable<SquareInfo>(

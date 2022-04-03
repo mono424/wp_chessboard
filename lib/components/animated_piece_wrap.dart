@@ -7,8 +7,9 @@ class AnimatedPieceWrap extends StatefulWidget {
   final Widget child;
   final StateEntry stateEntry;
   final double squareSize;
+  final bool animated;
 
-  const AnimatedPieceWrap({Key? key, required this.child, required this.stateEntry, required this.squareSize}) : super(key: key);
+  const AnimatedPieceWrap({Key? key, required this.child, required this.stateEntry, required this.squareSize, required this.animated}) : super(key: key);
 
   @override
   State<AnimatedPieceWrap> createState() => _AnimatedPieceWrapState();
@@ -20,20 +21,26 @@ class _AnimatedPieceWrapState extends State<AnimatedPieceWrap> {
 
   @override
   void initState() {
-    SquarePosition? pos = widget.stateEntry.lastPosition();
-    if (pos != null) {
-      rank = pos.rank;
-      file = pos.file;
+    if (widget.animated) {
+      SquarePosition? pos = widget.stateEntry.lastPosition();
+      if (pos != null) {
+        rank = pos.rank;
+        file = pos.file;
+      } else {
+        rank = widget.stateEntry.position.rank;
+        file = widget.stateEntry.position.file;
+      }
+      WidgetsBinding.instance!.addPostFrameCallback((_) {
+        setState(() {
+          rank = widget.stateEntry.position.rank;
+          file = widget.stateEntry.position.file;
+        });
+      });
     } else {
       rank = widget.stateEntry.position.rank;
       file = widget.stateEntry.position.file;
     }
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
-      setState(() {
-        rank = widget.stateEntry.position.rank;
-        file = widget.stateEntry.position.file;
-      });
-    });
+    
     super.initState();
   }
 
@@ -43,7 +50,7 @@ class _AnimatedPieceWrapState extends State<AnimatedPieceWrap> {
     double bottom = (rank) * widget.squareSize;
 
     return AnimatedPositioned(
-      key: Key("animation_" + widget.stateEntry.getKey()),
+      key: Key(widget.stateEntry.getKey() + "_a"),
       curve: Curves.linear,
       duration: const Duration(milliseconds: 200),
       bottom: bottom,
