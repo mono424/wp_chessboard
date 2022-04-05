@@ -8,6 +8,7 @@ import 'package:wp_chessboard/components/pieces.dart';
 import 'package:wp_chessboard/components/squares.dart';
 import 'package:wp_chessboard/models/arrow.dart';
 import 'package:wp_chessboard/models/arrow_list.dart';
+import 'package:wp_chessboard/models/board_orientation.dart';
 import 'package:wp_chessboard/models/chess_state.dart';
 import 'package:wp_chessboard/models/hint_map.dart';
 import 'package:wp_chessboard/models/piece_drop_event.dart';
@@ -19,6 +20,7 @@ class WPChessboard extends StatefulWidget {
   final double size;
   final Widget Function(SquareInfo) squareBuilder;
   final PieceMap pieceMap;
+  final BoardOrientation orientation;
   final WPChessboardController controller;
   final void Function(SquareInfo square, String piece)? onPieceTap;
   final void Function(SquareInfo square, String piece)? onPieceStartDrag;
@@ -26,7 +28,7 @@ class WPChessboard extends StatefulWidget {
   final void Function(PieceDropEvent)? onPieceDrop;
 
 
-  const WPChessboard({Key? key, required this.size, required this.squareBuilder, required this.pieceMap, required this.controller, this.onPieceTap, this.onPieceDrop, this.onEmptyFieldTap, this.onPieceStartDrag}) : super(key: key);
+  const WPChessboard({Key? key, required this.size, required this.squareBuilder, required this.pieceMap, required this.controller, this.onPieceTap, this.onPieceDrop, this.onEmptyFieldTap, this.onPieceStartDrag, this.orientation = BoardOrientation.white}) : super(key: key);
 
   @override
   State<WPChessboard> createState() => _WPChessboardState();
@@ -78,49 +80,53 @@ class _WPChessboardState extends State<WPChessboard> {
       color: Colors.black,
       width: widget.size,
       height: widget.size,
-      child: Stack(
-        children: [
-          Squares(
-            key: Key("squares_" + widget.size.toString() + "_" + state.fen),
-            size: widget.size,
-            squareBuilder: widget.squareBuilder,
-          ),
-
-          Positioned.fill(
-            child: Pieces(
-              key: Key("pieces_" + widget.size.toString() + "_" + state.fen),
+      child: RotatedBox(
+        quarterTurns: (widget.orientation == BoardOrientation.black) ? 2 : 0,
+        child: Stack(
+          children: [
+            Squares(
+              key: Key("squares_" + widget.size.toString() + "_" + state.fen),
               size: widget.size,
-              pieceMap: widget.pieceMap,
-              state: state,
-              onPieceTap: widget.onPieceTap,
-              onPieceStartDrag: widget.onPieceStartDrag,
-              onEmptyFieldTap: widget.onEmptyFieldTap,
-              animated: widget.controller.shouldAnimate
+              squareBuilder: widget.squareBuilder,
             ),
-          ),
 
-          Positioned.fill(
-            child: Hints(
-              key: Key(hints.id.toString()),
-              size: widget.size,
-              hints: hints,
+            Positioned.fill(
+              child: Pieces(
+                key: Key("pieces_" + widget.size.toString() + "_" + state.fen),
+                size: widget.size,
+                orientation: widget.orientation,
+                pieceMap: widget.pieceMap,
+                state: state,
+                onPieceTap: widget.onPieceTap,
+                onPieceStartDrag: widget.onPieceStartDrag,
+                onEmptyFieldTap: widget.onEmptyFieldTap,
+                animated: widget.controller.shouldAnimate
+              ),
             ),
-          ),
 
-          Positioned.fill(
-            child: Arrows(
-              size: widget.size,
-              arrows: arrows.value,
+            Positioned.fill(
+              child: Hints(
+                key: Key(hints.id.toString()),
+                size: widget.size,
+                hints: hints,
+              ),
             ),
-          ),
 
-          Positioned.fill(
-            child: DropTargets(
-              size: widget.size,
-              onPieceDrop: widget.onPieceDrop,
+            Positioned.fill(
+              child: Arrows(
+                size: widget.size,
+                arrows: arrows.value,
+              ),
             ),
-          ),
-        ],
+
+            Positioned.fill(
+              child: DropTargets(
+                size: widget.size,
+                onPieceDrop: widget.onPieceDrop,
+              ),
+            ),
+          ],
+        ),
       )
     );
   }

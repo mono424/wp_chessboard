@@ -3,6 +3,7 @@ import 'package:chess_vectors_flutter/chess_vectors_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:wp_chessboard/components/hints/move_hint.dart';
 import 'package:wp_chessboard/models/arrow.dart';
+import 'package:wp_chessboard/models/board_orientation.dart';
 import 'package:wp_chessboard/models/hint_map.dart';
 import 'package:wp_chessboard/models/piece_drop_event.dart';
 import 'package:wp_chessboard/models/piece_map.dart';
@@ -142,6 +143,17 @@ class _MyAppState extends State<MyApp> {
     controller.setArrows([]);
   }
 
+  BoardOrientation orienatation = BoardOrientation.white;
+  void toggleArrows() {
+    setState(() {
+      if (orienatation == BoardOrientation.white) {
+        orienatation = BoardOrientation.black;
+      } else {
+        orienatation = BoardOrientation.white;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -154,6 +166,7 @@ class _MyAppState extends State<MyApp> {
               children: [
                 WPChessboard(
                   size: size,
+                  orientation: orienatation,
                   squareBuilder: squareBuilder,
                   controller: controller,
                   onPieceDrop: onPieceDrop,
@@ -191,6 +204,10 @@ class _MyAppState extends State<MyApp> {
                 TextButton(
                   onPressed: removeArrows,
                   child: const Text("Remove Arrows"),
+                ),
+                TextButton(
+                  onPressed: toggleArrows,
+                  child: const Text("Change Orientation"),
                 )
               ],
             );

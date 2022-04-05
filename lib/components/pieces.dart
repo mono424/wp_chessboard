@@ -2,6 +2,7 @@ library wp_chessboard;
 
 import 'package:flutter/material.dart';
 import 'package:wp_chessboard/components/animated_piece_wrap.dart';
+import 'package:wp_chessboard/models/board_orientation.dart';
 import 'package:wp_chessboard/models/chess_state.dart';
 import 'package:wp_chessboard/models/piece_map.dart';
 import 'package:wp_chessboard/models/square_info.dart';
@@ -10,12 +11,13 @@ class Pieces extends StatelessWidget {
   final double size;
   final PieceMap pieceMap;
   final ChessState state;
+  final BoardOrientation orientation;
   final void Function(SquareInfo square, String piece)? onPieceTap;
   final void Function(SquareInfo square, String piece)? onPieceStartDrag;
   final void Function(SquareInfo square)? onEmptyFieldTap;
   final bool animated;
 
-  const Pieces({Key? key, required this.size, required this.pieceMap, required this.state, this.onPieceTap, this.onEmptyFieldTap, this.onPieceStartDrag, required this.animated}) : super(key: key);
+  const Pieces({Key? key, required this.size, required this.pieceMap, required this.state, this.onPieceTap, this.onEmptyFieldTap, this.onPieceStartDrag, required this.animated, required this.orientation}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -55,12 +57,15 @@ class Pieces extends StatelessWidget {
             animated: animated,
             child: GestureDetector(
               onTapDown: onPieceTap != null ? (_) => onPieceTap!(info, pieceEntry.piece) : null,
-              child: Draggable<SquareInfo>(
-                onDragStarted: onPieceStartDrag != null ? () => onPieceStartDrag!(info, pieceEntry.piece) : null,
-                data: info,
-                feedback: pieceWidget,
-                child: pieceWidget,
-              )
+              child: RotatedBox(
+                quarterTurns: (orientation == BoardOrientation.black) ? 2 : 0,
+                child: Draggable<SquareInfo>(
+                  onDragStarted: onPieceStartDrag != null ? () => onPieceStartDrag!(info, pieceEntry.piece) : null,
+                  data: info,
+                  feedback: pieceWidget,
+                  child: pieceWidget,
+                )
+              ),
             ),
           );
         }

@@ -1,0 +1,3 @@
+enum BoardOrientation {
+  white, black
+}
