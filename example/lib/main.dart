@@ -2,9 +2,11 @@ import 'package:chess/chess.dart' as Chess;
 import 'package:chess_vectors_flutter/chess_vectors_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:wp_chessboard/components/hints/move_hint.dart';
+import 'package:wp_chessboard/models/arrow.dart';
 import 'package:wp_chessboard/models/hint_map.dart';
 import 'package:wp_chessboard/models/piece_drop_event.dart';
 import 'package:wp_chessboard/models/piece_map.dart';
+import 'package:wp_chessboard/models/square.dart';
 import 'package:wp_chessboard/models/square_info.dart';
 import 'package:wp_chessboard/wp_chessboard.dart';
 
@@ -122,6 +124,24 @@ class _MyAppState extends State<MyApp> {
     controller.setFen(chess.fen, animation: animated);
   }
 
+  void addArrows() {
+    controller.setArrows([
+      Arrow(
+        from: SquareLocation.fromString("b1"),
+        to: SquareLocation.fromString("c3"),
+      ),
+      Arrow(
+        from: SquareLocation.fromString("g1"),
+        to: SquareLocation.fromString("f3"),
+        color: Colors.red
+      )
+    ]);
+  }
+
+  void removeArrows() {
+    controller.setArrows([]);
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -163,6 +183,14 @@ class _MyAppState extends State<MyApp> {
                 TextButton(
                   onPressed: setRandomFen,
                   child: const Text("Set random Fen"),
+                ),
+                TextButton(
+                  onPressed: addArrows,
+                  child: const Text("Add Arrows"),
+                ),
+                TextButton(
+                  onPressed: removeArrows,
+                  child: const Text("Remove Arrows"),
                 )
               ],
             );

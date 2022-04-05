@@ -1,10 +1,13 @@
 library wp_chessboard;
 
 import 'package:flutter/material.dart';
+import 'package:wp_chessboard/components/arrows.dart';
 import 'package:wp_chessboard/components/drop_targets.dart';
 import 'package:wp_chessboard/components/hints.dart';
 import 'package:wp_chessboard/components/pieces.dart';
 import 'package:wp_chessboard/components/squares.dart';
+import 'package:wp_chessboard/models/arrow.dart';
+import 'package:wp_chessboard/models/arrow_list.dart';
 import 'package:wp_chessboard/models/chess_state.dart';
 import 'package:wp_chessboard/models/hint_map.dart';
 import 'package:wp_chessboard/models/piece_drop_event.dart';
@@ -32,6 +35,7 @@ class WPChessboard extends StatefulWidget {
 class _WPChessboardState extends State<WPChessboard> {
   ChessState state = ChessState("");
   HintMap hints = HintMap();
+  ArrowList arrows = ArrowList([]); 
 
   @override
   void initState() {
@@ -42,6 +46,9 @@ class _WPChessboardState extends State<WPChessboard> {
       }
       if (hints.id != widget.controller.hints.id) {
         onUpdateHints(widget.controller.hints);
+      }
+      if (arrows.id != widget.controller.arrows.id) {
+        onUpdateArrows(widget.controller.arrows);
       }
     });
     super.initState();
@@ -56,6 +63,12 @@ class _WPChessboardState extends State<WPChessboard> {
   void onUpdateHints(HintMap newHints) {
     setState(() {
       hints = newHints;
+    });
+  }
+
+  void onUpdateArrows(ArrowList newArrows) {
+    setState(() {
+      arrows = newArrows;
     });
   }
 
@@ -95,6 +108,13 @@ class _WPChessboardState extends State<WPChessboard> {
           ),
 
           Positioned.fill(
+            child: Arrows(
+              size: widget.size,
+              arrows: arrows.value,
+            ),
+          ),
+
+          Positioned.fill(
             child: DropTargets(
               size: widget.size,
               onPieceDrop: widget.onPieceDrop,
@@ -109,6 +129,7 @@ class _WPChessboardState extends State<WPChessboard> {
 class WPChessboardController extends ChangeNotifier {
   ChessState state = ChessState("");
   HintMap hints = HintMap();
+  ArrowList arrows = ArrowList([]);
   bool shouldAnimate = true;
 
   WPChessboardController();
@@ -131,6 +152,11 @@ class WPChessboardController extends ChangeNotifier {
 
   void setHints(HintMap value) {
     hints = value;
+    notifyListeners();
+  }
+
+  void setArrows(List<Arrow> value) {
+    arrows = ArrowList(value);
     notifyListeners();
   }
 }
