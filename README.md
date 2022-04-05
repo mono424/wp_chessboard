@@ -8,7 +8,11 @@ A very customizable Chessboard with awesomeness already onboard:
 
 🎬️ Move Animations
 
-💡 Hint Overlays
+🔄 Orientation
+
+💡 Hints
+
+💡 Arrows
 
 ## Features
 
@@ -20,9 +24,17 @@ A very customizable Chessboard with awesomeness already onboard:
 
 ![Animate-Many](https://github.com/mono424/wp_chessboard/blob/main/images/animate-many.gif?raw=true)
 
-### 💡 Display Hints as overlay
+### 🔄 Change Orientation
+
+![Hints](https://github.com/mono424/wp_chessboard/blob/main/images/orientation.png?raw=true)
+
+### 💡 Display Hints
 
 ![Hints](https://github.com/mono424/wp_chessboard/blob/main/images/hints.gif?raw=true)
+
+### 💡 Display Arrows
+
+![Hints](https://github.com/mono424/wp_chessboard/blob/main/images/arrows.png?raw=true)
 
 
 ## Usage
