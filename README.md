@@ -26,7 +26,7 @@ A very customizable Chessboard with awesomeness already onboard:
 
 ### 🔄 Change Orientation
 
-![Hints](https://github.com/mono424/wp_chessboard/blob/main/images/board-orientation.png?raw=true)
+![Board-Orientation](https://github.com/mono424/wp_chessboard/blob/main/images/board-orientation.png?raw=true)
 
 ### 💡 Display Hints
 
@@ -34,7 +34,7 @@ A very customizable Chessboard with awesomeness already onboard:
 
 ### 💡 Display Arrows
 
-![Hints](https://github.com/mono424/wp_chessboard/blob/main/images/board-arrows.png?raw=true)
+![Board-Arrows](https://github.com/mono424/wp_chessboard/blob/main/images/board-arrows.png?raw=true)
 
 
 ## Usage
