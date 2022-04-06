@@ -16,6 +16,10 @@ A very customizable Chessboard with awesomeness already onboard:
 
 ## Features
 
+### 👇️ Dragable Pieces
+
+![Drag-Drop](https://github.com/mono424/wp_chessboard/blob/main/images/drag-drop.png?raw=true)
+
 ### 🎬️ Piece Animations for Single Moves
 
 ![Animate-Single](https://github.com/mono424/wp_chessboard/blob/main/images/animate-single.gif?raw=true)
