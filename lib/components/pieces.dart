@@ -16,8 +16,10 @@ class Pieces extends StatelessWidget {
   final void Function(SquareInfo square, String piece)? onPieceStartDrag;
   final void Function(SquareInfo square)? onEmptyFieldTap;
   final bool animated;
+  final bool disableDrag;
+  final bool ghostOnDrag;
 
-  const Pieces({Key? key, required this.size, required this.pieceMap, required this.state, this.onPieceTap, this.onEmptyFieldTap, this.onPieceStartDrag, required this.animated, required this.orientation}) : super(key: key);
+  const Pieces({Key? key, required this.size, required this.pieceMap, required this.state, this.onPieceTap, this.onEmptyFieldTap, this.onPieceStartDrag, required this.animated, required this.orientation, required this.disableDrag, required this.ghostOnDrag}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -59,8 +61,9 @@ class Pieces extends StatelessWidget {
               onTapDown: onPieceTap != null ? (_) => onPieceTap!(info, pieceEntry.piece) : null,
               child: RotatedBox(
                 quarterTurns: (orientation == BoardOrientation.black) ? 2 : 0,
-                child: Draggable<SquareInfo>(
+                child: disableDrag ? pieceWidget : Draggable<SquareInfo>(
                   onDragStarted: onPieceStartDrag != null ? () => onPieceStartDrag!(info, pieceEntry.piece) : null,
+                  childWhenDragging: ghostOnDrag ? Opacity(opacity: 0.2, child: pieceWidget) : const SizedBox(),
                   data: info,
                   feedback: pieceWidget,
                   child: pieceWidget,

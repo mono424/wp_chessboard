@@ -26,9 +26,10 @@ class WPChessboard extends StatefulWidget {
   final void Function(SquareInfo square, String piece)? onPieceStartDrag;
   final void Function(SquareInfo square)? onEmptyFieldTap;
   final void Function(PieceDropEvent)? onPieceDrop;
+  final bool ghostOnDrag;
 
 
-  const WPChessboard({Key? key, required this.size, required this.squareBuilder, required this.pieceMap, required this.controller, this.onPieceTap, this.onPieceDrop, this.onEmptyFieldTap, this.onPieceStartDrag, this.orientation = BoardOrientation.white}) : super(key: key);
+  const WPChessboard({Key? key, required this.size, required this.squareBuilder, required this.pieceMap, required this.controller, this.onPieceTap, this.onPieceDrop, this.onEmptyFieldTap, this.onPieceStartDrag, this.orientation = BoardOrientation.white, this.ghostOnDrag = false}) : super(key: key);
 
   @override
   State<WPChessboard> createState() => _WPChessboardState();
@@ -99,6 +100,8 @@ class _WPChessboardState extends State<WPChessboard> {
                 state: state,
                 onPieceTap: widget.onPieceTap,
                 onPieceStartDrag: widget.onPieceStartDrag,
+                disableDrag: widget.onPieceDrop == null,
+                ghostOnDrag: widget.ghostOnDrag,
                 onEmptyFieldTap: widget.onEmptyFieldTap,
                 animated: widget.controller.shouldAnimate
               ),

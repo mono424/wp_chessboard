@@ -59,12 +59,16 @@ class _MyAppState extends State<MyApp> {
   }
 
   void onPieceTap(SquareInfo square, String piece) {
+    if (controller.hints.key == square.index.toString()) {
+      controller.setHints(HintMap());
+      return;
+    }
     showHintFields(square, piece);
   }
-
+  
   void showHintFields(SquareInfo square, String piece) {
     final moves = chess.generate_moves({ 'square': square.toString() });
-    final hintMap = HintMap();
+    final hintMap = HintMap(key: square.index.toString());
     for (var move in moves) {
       String to = move.toAlgebraic;
       int rank = to.codeUnitAt(1) - "1".codeUnitAt(0) + 1;
@@ -169,10 +173,12 @@ class _MyAppState extends State<MyApp> {
                   orientation: orienatation,
                   squareBuilder: squareBuilder,
                   controller: controller,
+                  // Dont pass any onPieceDrop handler to disable drag and drop
                   onPieceDrop: onPieceDrop,
                   onPieceTap: onPieceTap,
                   onPieceStartDrag: onPieceStartDrag,
                   onEmptyFieldTap: onEmptyFieldTap,
+                  ghostOnDrag: true,
                   pieceMap: PieceMap(
                     K: (size) => WhiteKing(size: size),
                     Q: (size) => WhiteQueen(size: size),

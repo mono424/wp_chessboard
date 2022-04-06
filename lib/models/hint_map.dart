@@ -4,6 +4,7 @@ typedef HintBuilder = Widget Function(double size);
 
 class HintMap {
   static int _lastId = 0;
+  final String key;
   late int _id;
   Map<int, Map<int, HintBuilder?>> board = {};
 
@@ -11,7 +12,7 @@ class HintMap {
     return _id;
   }
 
-  HintMap() {
+  HintMap({ this.key = "" }) {
     _updateId();
     for (var i = 0; i < 8; i++) {
       board[i] = {};
