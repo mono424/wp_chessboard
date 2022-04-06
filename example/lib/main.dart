@@ -1,6 +1,7 @@
 import 'package:chess/chess.dart' as Chess;
 import 'package:chess_vectors_flutter/chess_vectors_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:wp_chessboard/components/drop_targets.dart';
 import 'package:wp_chessboard/components/hints/move_hint.dart';
 import 'package:wp_chessboard/models/arrow.dart';
 import 'package:wp_chessboard/models/board_orientation.dart';
@@ -179,6 +180,10 @@ class _MyAppState extends State<MyApp> {
                   onPieceStartDrag: onPieceStartDrag,
                   onEmptyFieldTap: onEmptyFieldTap,
                   ghostOnDrag: true,
+                  dropIndicator: DropIndicatorArgs(
+                    size: size / 2,
+                    color: Colors.lightBlue.withOpacity(0.24)
+                  ),
                   pieceMap: PieceMap(
                     K: (size) => WhiteKing(size: size),
                     Q: (size) => WhiteQueen(size: size),
