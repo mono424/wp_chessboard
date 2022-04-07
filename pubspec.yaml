@@ -1,7 +1,7 @@
 name: wp_chessboard
-description: A new Flutter package project.
+description: A very customizable Chessboard with awesomeness already onboard.
 version: 0.0.1
-homepage:
+repository: https://github.com/mono424/wp_chessboard
 
 environment:
   sdk: ">=2.16.1 <3.0.0"
