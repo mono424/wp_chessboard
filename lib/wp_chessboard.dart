@@ -1,5 +1,17 @@
 library wp_chessboard;
 
+export 'package:wp_chessboard/models/piece_map.dart';
+export 'package:wp_chessboard/models/arrow_list.dart';
+export 'package:wp_chessboard/models/arrow.dart';
+export 'package:wp_chessboard/models/square_info.dart';
+export 'package:wp_chessboard/models/piece_drop_event.dart';
+export 'package:wp_chessboard/models/board_orientation.dart';
+export 'package:wp_chessboard/models/hint_map.dart';
+export 'package:wp_chessboard/models/hint_map.dart';
+export 'package:wp_chessboard/models/drop_indicator_args.dart';
+export 'package:wp_chessboard/models/square.dart';
+export 'package:wp_chessboard/components/hints/move_hint.dart';
+
 import 'package:flutter/material.dart';
 import 'package:wp_chessboard/components/arrows.dart';
 import 'package:wp_chessboard/components/drop_targets.dart';
@@ -10,11 +22,11 @@ import 'package:wp_chessboard/models/arrow.dart';
 import 'package:wp_chessboard/models/arrow_list.dart';
 import 'package:wp_chessboard/models/board_orientation.dart';
 import 'package:wp_chessboard/models/chess_state.dart';
+import 'package:wp_chessboard/models/drop_indicator_args.dart';
 import 'package:wp_chessboard/models/hint_map.dart';
 import 'package:wp_chessboard/models/piece_drop_event.dart';
+import 'package:wp_chessboard/models/piece_map.dart';
 import 'package:wp_chessboard/models/square_info.dart';
-
-import 'models/piece_map.dart';
 
 class WPChessboard extends StatefulWidget {
   final double size;

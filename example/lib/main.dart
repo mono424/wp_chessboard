@@ -1,15 +1,6 @@
 import 'package:chess/chess.dart' as Chess;
 import 'package:chess_vectors_flutter/chess_vectors_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:wp_chessboard/components/drop_targets.dart';
-import 'package:wp_chessboard/components/hints/move_hint.dart';
-import 'package:wp_chessboard/models/arrow.dart';
-import 'package:wp_chessboard/models/board_orientation.dart';
-import 'package:wp_chessboard/models/hint_map.dart';
-import 'package:wp_chessboard/models/piece_drop_event.dart';
-import 'package:wp_chessboard/models/piece_map.dart';
-import 'package:wp_chessboard/models/square.dart';
-import 'package:wp_chessboard/models/square_info.dart';
 import 'package:wp_chessboard/wp_chessboard.dart';
 
 void main() {

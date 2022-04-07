@@ -1,16 +1,9 @@
 library wp_chessboard;
 
 import 'package:flutter/material.dart';
+import 'package:wp_chessboard/models/drop_indicator_args.dart';
 import 'package:wp_chessboard/models/piece_drop_event.dart';
 import 'package:wp_chessboard/models/square_info.dart';
-
-class DropIndicatorArgs {
-  final double size;
-  final Color color;
-  final BorderRadius radius;
-
-  DropIndicatorArgs({required this.size, required this.color, radius}) : radius = radius ?? BorderRadius.circular(size);
-}
 
 class DropTargets extends StatefulWidget {
   final double size;
