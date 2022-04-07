@@ -179,6 +179,7 @@ class _MyAppState extends State<MyApp> {
                   onPieceTap: onPieceTap,
                   onPieceStartDrag: onPieceStartDrag,
                   onEmptyFieldTap: onEmptyFieldTap,
+                  turnTopPlayerPieces: false,
                   ghostOnDrag: true,
                   dropIndicator: DropIndicatorArgs(
                     size: size / 2,
