@@ -43,10 +43,9 @@ A very customizable Chessboard with awesomeness already onboard:
 
 ## Usage
 
-First import the `WPChessboard` widget and the `PieceMap` class.
+First import the `WPChessboard` widget.
 ```dart
 import 'package:wp_chessboard/wp_chessboard.dart';
-import 'package:wp_chessboard/models/piece_map.dart';
 ```
 
 Then, you are ready to use it
@@ -57,12 +56,20 @@ Then, you are ready to use it
 ```dart
 WPChessboard(
     size: size,
+    orientation: orienatation,
     squareBuilder: squareBuilder,
     controller: controller,
+    // Dont pass any onPieceDrop handler to disable drag and drop
     onPieceDrop: onPieceDrop,
     onPieceTap: onPieceTap,
     onPieceStartDrag: onPieceStartDrag,
     onEmptyFieldTap: onEmptyFieldTap,
+    turnTopPlayerPieces: false,
+    ghostOnDrag: true,
+    dropIndicator: DropIndicatorArgs(
+        size: size / 2,
+        color: Colors.lightBlue.withOpacity(0.24)
+    ),
     pieceMap: PieceMap(
         K: (size) => WhiteKing(size: size),
         Q: (size) => WhiteQueen(size: size),
