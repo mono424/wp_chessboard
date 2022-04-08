@@ -105,7 +105,7 @@ class _MyAppState extends State<MyApp> {
   }
   void setDefaultFen() {
     setState(() {
-      chess = Chess.Chess.fromFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1");
+      chess = Chess.Chess.fromFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     });
     update();
   }
