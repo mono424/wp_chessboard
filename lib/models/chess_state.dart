@@ -63,12 +63,10 @@ class ChessState {
 
           if (piece >= zero && piece <= nine) {
             for (int j = 0; j < piece-zero; j++) {
-                String lastPiece = last != null ? last!.board[currRank]![file]!.piece : "";
                 _board[currRank]![file] = StateEntry("", SquarePosition(currRank, file), this);
                 file++;
             }
           } else {
-            String lastPiece = last != null ? last!.board[currRank]![file]!.piece : "";
             String pieceNotation = String.fromCharCode(piece);
             _board[currRank]![file] = StateEntry(pieceNotation, SquarePosition(currRank, file), this);
             file++;
