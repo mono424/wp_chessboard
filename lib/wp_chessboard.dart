@@ -157,7 +157,9 @@ class WPChessboardController extends ChangeNotifier {
   ArrowList arrows = ArrowList([]);
   bool shouldAnimate = true;
 
-  WPChessboardController();
+  WPChessboardController({ initialFen = "" }) {
+    state = ChessState(initialFen);
+  }
 
   void setFen(String value, { bool resetHints = true, bool newGame = false, bool animation = true }) {
     shouldAnimate = animation;
