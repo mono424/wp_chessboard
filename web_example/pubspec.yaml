@@ -1,0 +1,23 @@
+name: web_example
+description: A new Flutter project.
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=2.19.0-444.6.beta <3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  wp_chessboard:
+    path: "../"
+  js: ^0.6.7
+  chess_vectors_flutter: ^1.0.18
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true

@@ -31,7 +31,7 @@ dependencies:
     sdk: flutter
   wp_chessboard:
     path: "../"
-  chess_vectors_flutter: ^1.0.16
+  chess_vectors_flutter: ^1.0.18
   chess: ^0.7.0
 
 
