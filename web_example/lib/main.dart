@@ -63,6 +63,7 @@ class _MyAppState extends State<MyApp> {
   final ValueNotifier<String> _lightColor = ValueNotifier<String>(Colors.grey.shade200.toHex());
   final ValueNotifier<String> _darkColor = ValueNotifier<String>(Colors.grey.shade600.toHex());
   final ValueNotifier<double> _size= ValueNotifier<double>(400);
+  final ValueNotifier<bool> _orientation= ValueNotifier<bool>(false);
   final controller = WPChessboardController();
 
   @override
@@ -73,6 +74,7 @@ class _MyAppState extends State<MyApp> {
       size: _size,
       lightColor: _lightColor,
       darkColor: _darkColor,
+      orientation: _orientation,
     );
     final export = createDartExport(_state);
     broadcastAppEvent('flutter-initialized', export);
@@ -142,10 +144,10 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       builder: (context, child) => AnimatedBuilder(
-        animation: Listenable.merge([_size, _lightColor, _darkColor]),
+        animation: Listenable.merge([_size, _lightColor, _darkColor, _orientation]),
         builder: (context, _) => WPChessboard(
           size: _size.value,
-          orientation: orienatation,
+          orientation: _orientation.value ? BoardOrientation.black : BoardOrientation.white,
           squareBuilder: createSquareBuilder(
             HexColor.fromHex(_lightColor.value),
             HexColor.fromHex(_darkColor.value)

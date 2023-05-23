@@ -8,12 +8,14 @@ class StateManager {
     required ValueNotifier<double> size,
     required ValueNotifier<String> lightColor,
     required ValueNotifier<String> darkColor,
-  })  : _fen = fen, _size = size, _lightColor = lightColor, _darkColor = darkColor;
+    required ValueNotifier<bool> orientation,
+  })  : _fen = fen, _size = size, _lightColor = lightColor, _darkColor = darkColor, _orientation = orientation;
 
   final ValueNotifier<String> _fen;
   final ValueNotifier<double> _size;
   final ValueNotifier<String> _lightColor;
   final ValueNotifier<String> _darkColor;
+  final ValueNotifier<bool> _orientation;
 
   String getFen() {
     return _fen.value;
@@ -21,6 +23,14 @@ class StateManager {
 
   void setFen(String value) {
     _fen.value = value;
+  }
+
+  bool getOrientation() {
+    return _orientation.value;
+  }
+
+  void setOrientation(bool value) {
+    _orientation.value = value;
   }
 
   double getSize() {
