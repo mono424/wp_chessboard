@@ -1,5 +1,6 @@
 /* global _flutter */
-
+import 'flutter';
+import mainjs from 'flutter/main.dart.js';
 import React, { useRef, useEffect, useState } from 'react';
 
 function WPChessboard({ src, assetBase, didLoad, size, fen }) {
@@ -9,9 +10,8 @@ function WPChessboard({ src, assetBase, didLoad, size, fen }) {
   useEffect(() => {
     if (!ref.current || state) return;
     _flutter.loader.loadEntrypoint({
-      entrypointUrl: src,
+      entrypointUrl: mainjs,
       onEntrypointLoaded: async (engineInitializer) => {
-        console.log(ref.current);
         let appRunner = await engineInitializer.initializeEngine({
           hostElement: ref.current,
           assetBase: assetBase,
