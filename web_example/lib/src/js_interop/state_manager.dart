@@ -69,11 +69,11 @@ class StateManager {
     _watermarkVisible.value = value;
   }
 
-  double getWaterMarkOpacity() {
+  double getWatermarkOpacity() {
     return _watermarkOpacity.value;
   }
 
-  void setWaterMarkOpacity(double value) {
+  void setWatermarkOpacity(double value) {
     _watermarkOpacity.value = value;
   }
 
