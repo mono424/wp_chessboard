@@ -22,10 +22,17 @@ extension HexColor on Color {
       '${blue.toRadixString(16).padLeft(2, '0')}';
 }
 
-Widget Function(SquareInfo) createSquareBuilder(Color light, Color dark) {
+const watermarkSquare = ["d5", "e4"];
+
+Widget Function(SquareInfo) createSquareBuilder(Color light, Color dark, String watermarkAsset, double watermarkOpacity) {
+  final watermarkAvailable = watermarkAsset != "";
+  final watermark = watermarkAvailable ? Opacity(opacity: watermarkOpacity, child: Image.asset(watermarkAsset)) : const SizedBox();
+
   return (SquareInfo info) {
     Color fieldColor = (info.index + info.rank) % 2 == 0 ? light : dark;
     Color overlayColor = Colors.transparent;
+
+    bool showWatermark = watermarkAvailable && watermarkSquare.contains(info.toString());
 
     // if (lastMove != null ) {
     //   if (lastMove!.first.first == info.rank && lastMove!.first.last == info.file) {
@@ -44,6 +51,12 @@ Widget Function(SquareInfo) createSquareBuilder(Color light, Color dark) {
         width: info.size,
         height: info.size,
         duration: const Duration(milliseconds: 200),
+        child: showWatermark ? Center(
+          child: Padding(
+            padding: EdgeInsets.all(info.size / 8),
+            child: watermark,
+          ),
+        ) : null
       )
     );
   };
@@ -64,6 +77,8 @@ class _MyAppState extends State<MyApp> {
   final ValueNotifier<String> _darkColor = ValueNotifier<String>(Colors.grey.shade600.toHex());
   final ValueNotifier<double> _size= ValueNotifier<double>(400);
   final ValueNotifier<bool> _orientation= ValueNotifier<bool>(false);
+  final ValueNotifier<bool> _watermarkVisible = ValueNotifier<bool>(true);
+  final ValueNotifier<double> _watermarkOpacity = ValueNotifier<double>(0.34);
   final controller = WPChessboardController();
 
   @override
@@ -75,6 +90,8 @@ class _MyAppState extends State<MyApp> {
       lightColor: _lightColor,
       darkColor: _darkColor,
       orientation: _orientation,
+      watermarkVisible: _watermarkVisible,
+      watermarkOpacity: _watermarkOpacity
     );
     final export = createDartExport(_state);
     broadcastAppEvent('flutter-initialized', export);
@@ -150,7 +167,9 @@ class _MyAppState extends State<MyApp> {
           orientation: _orientation.value ? BoardOrientation.black : BoardOrientation.white,
           squareBuilder: createSquareBuilder(
             HexColor.fromHex(_lightColor.value),
-            HexColor.fromHex(_darkColor.value)
+            HexColor.fromHex(_darkColor.value),
+            _watermarkVisible.value ? "assets/watermark.png" : "",
+            _watermarkOpacity.value,
           ),
           controller: controller,
           // Dont pass any onPieceDrop handler to disable drag and drop
