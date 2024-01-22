@@ -1,3 +1,7 @@
+## 0.0.4
+
+* Prevent an exception when "reusing" the controller (fixed by @topse)
+
 ## 0.0.3
 
 * Fix static analysis

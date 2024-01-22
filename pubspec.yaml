@@ -1,6 +1,6 @@
 name: wp_chessboard
 description: A very customizable Chessboard with awesomeness already onboard.
-version: 0.0.3
+version: 0.0.4
 repository: https://github.com/mono424/wp_chessboard
 
 environment:
