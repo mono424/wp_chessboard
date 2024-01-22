@@ -57,20 +57,28 @@ class _WPChessboardState extends State<WPChessboard> {
   @override
   void initState() {
     state = widget.controller.state;
-    widget.controller.addListener(() {
-      if (state.fen != widget.controller.state.fen) {
-        onUpdateState(widget.controller.state);
-      }
-      if (hints.id != widget.controller.hints.id) {
-        onUpdateHints(widget.controller.hints);
-      }
-      if (arrows.id != widget.controller.arrows.id) {
-        onUpdateArrows(widget.controller.arrows);
-      }
-    });
+    widget.controller.addListener(_controllerListener);
     super.initState();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    widget.controller.removeListener(_controllerListener);
+  }
+
+  void _controllerListener() {
+    if (state.fen != widget.controller.state.fen) {
+      onUpdateState(widget.controller.state);
+    }
+    if (hints.id != widget.controller.hints.id) {
+      onUpdateHints(widget.controller.hints);
+    }
+    if (arrows.id != widget.controller.arrows.id) {
+      onUpdateArrows(widget.controller.arrows);
+    }
+  }
+  
   void onUpdateState(ChessState newState) {
     setState(() {
       state = newState;
