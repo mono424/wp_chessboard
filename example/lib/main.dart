@@ -176,6 +176,7 @@ class _MyAppState extends State<MyApp> {
                     size: size / 2,
                     color: Colors.lightBlue.withOpacity(0.24)
                   ),
+                  shortcuts: const ShortcutArgs(),
                   pieceMap: PieceMap(
                     K: (size) => WhiteKing(size: size),
                     Q: (size) => WhiteQueen(size: size),
