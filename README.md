@@ -14,6 +14,8 @@ A very customizable Chessboard with awesomeness already onboard:
 
 💡 Arrows
 
+⌨️ Keyboard Shortcuts
+
 ## Features
 
 ### 👇️ Dragable Pieces
@@ -40,6 +42,16 @@ A very customizable Chessboard with awesomeness already onboard:
 
 ![Board-Arrows](https://github.com/mono424/wp_chessboard/blob/main/images/board-arrows.png?raw=true)
 
+### ⌨️ Keyboard Shortcuts
+
+Opt in by passing `shortcuts: ShortcutArgs()`. The user types a file letter (`a`–`h`) to highlight a column, then a digit (`1`–`8`) to narrow to a single square, and confirms with `space` — which fires the same handlers a click would. Set `commitMode: ShortcutCommitMode.auto` to commit the moment the digit is typed (no space needed). A stray click clears any pending selection. The highlight widget is restyleable via `highlightBuilder`.
+
+```dart
+ShortcutArgs(
+  commitMode: ShortcutCommitMode.space, // or .auto
+  highlightBuilder: (size) => ShortcutHighlight(size: size, color: Colors.amber),
+)
+```
 
 ## Usage
 
@@ -70,6 +82,7 @@ WPChessboard(
         size: size / 2,
         color: Colors.lightBlue.withOpacity(0.24)
     ),
+    shortcuts: const ShortcutArgs(),
     pieceMap: PieceMap(
         K: (size) => WhiteKing(size: size),
         Q: (size) => WhiteQueen(size: size),
