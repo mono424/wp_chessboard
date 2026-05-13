@@ -16,8 +16,9 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final controller = WPChessboardController();
-  Chess.Chess chess = Chess.Chess();
+  static const String _initialFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+  final controller = WPChessboardController(initialFen: _initialFen);
+  Chess.Chess chess = Chess.Chess.fromFEN(_initialFen);
   List<List<int>>? lastMove;
 
   // not working on drop
@@ -57,7 +58,7 @@ class _MyAppState extends State<MyApp> {
     }
     showHintFields(square, piece);
   }
-  
+
   void showHintFields(SquareInfo square, String piece) {
     final moves = chess.generate_moves({ 'square': square.toString() });
     final hintMap = HintMap(key: square.index.toString());
@@ -91,7 +92,7 @@ class _MyAppState extends State<MyApp> {
 
   void doMove(Chess.Move move) {
     chess.move(move);
-    
+
     int rankFrom = move.fromAlgebraic.codeUnitAt(1) - "1".codeUnitAt(0) + 1;
     int fileFrom = move.fromAlgebraic.codeUnitAt(0) - "a".codeUnitAt(0) + 1;
     int rankTo = move.toAlgebraic.codeUnitAt(1) - "1".codeUnitAt(0) + 1;
@@ -150,6 +151,15 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  ShortcutCommitMode commitMode = ShortcutCommitMode.space;
+  void toggleCommitMode() {
+    setState(() {
+      commitMode = commitMode == ShortcutCommitMode.space
+          ? ShortcutCommitMode.auto
+          : ShortcutCommitMode.space;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -176,7 +186,7 @@ class _MyAppState extends State<MyApp> {
                     size: size / 2,
                     color: Colors.lightBlue.withOpacity(0.24)
                   ),
-                  shortcuts: const ShortcutArgs(),
+                  shortcuts: ShortcutArgs(commitMode: commitMode),
                   pieceMap: PieceMap(
                     K: (size) => WhiteKing(size: size),
                     Q: (size) => WhiteQueen(size: size),
@@ -212,6 +222,12 @@ class _MyAppState extends State<MyApp> {
                 TextButton(
                   onPressed: toggleArrows,
                   child: const Text("Change Orientation"),
+                ),
+                TextButton(
+                  onPressed: toggleCommitMode,
+                  child: Text(
+                    "Commit mode: ${commitMode == ShortcutCommitMode.auto ? 'auto' : 'space'}",
+                  ),
                 )
               ],
             );

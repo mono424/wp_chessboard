@@ -14,6 +14,7 @@ export 'package:wp_chessboard/models/square.dart';
 export 'package:wp_chessboard/components/hints/move_hint.dart';
 export 'package:wp_chessboard/components/shortcuts/shortcut_highlight.dart';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wp_chessboard/components/arrows.dart';
@@ -63,6 +64,8 @@ class _WPChessboardState extends State<WPChessboard> {
   int? _selFile;
   int? _selRank;
   final FocusNode _focusNode = FocusNode();
+  final GlobalKey _boardKey = GlobalKey();
+  int _syntheticPointer = 0;
 
   @override
   void initState() {
@@ -91,21 +94,30 @@ class _WPChessboardState extends State<WPChessboard> {
     final int? rank = _selRank;
     if (file == null || rank == null) return;
 
+    final RenderBox? box = _boardKey.currentContext?.findRenderObject() as RenderBox?;
+    if (box == null) return;
+
     final double squareSize = widget.size / 8;
-    final int index = (rank - 1) * 8 + (file - 1);
-    final SquareInfo info = SquareInfo(index, squareSize);
-    final StateEntry entry = state.getEntry(rank, file);
+    final Offset localCenter = Offset(
+      (file - 1) * squareSize + squareSize / 2,
+      (8 - rank) * squareSize + squareSize / 2,
+    );
+    final Offset globalCenter = box.localToGlobal(localCenter);
 
     setState(() {
       _selFile = null;
       _selRank = null;
     });
 
-    if (entry.piece == "") {
-      widget.onEmptyFieldTap?.call(info);
-    } else {
-      widget.onPieceTap?.call(info, entry.piece);
-    }
+    _syntheticPointer++;
+    GestureBinding.instance.handlePointerEvent(PointerDownEvent(
+      pointer: _syntheticPointer,
+      position: globalCenter,
+    ));
+    GestureBinding.instance.handlePointerEvent(PointerUpEvent(
+      pointer: _syntheticPointer,
+      position: globalCenter,
+    ));
   }
 
   KeyEventResult _onKeyEvent(FocusNode node, KeyEvent event) {
@@ -130,9 +142,15 @@ class _WPChessboardState extends State<WPChessboard> {
 
     if (code >= oneCode && code <= eightCode) {
       if (_selFile == null) return KeyEventResult.ignored;
-      setState(() {
-        _selRank = code - oneCode + 1;
-      });
+      final int rank = code - oneCode + 1;
+      if (widget.shortcuts?.commitMode == ShortcutCommitMode.auto) {
+        _selRank = rank;
+        _commitSelection();
+      } else {
+        setState(() {
+          _selRank = rank;
+        });
+      }
       return KeyEventResult.handled;
     }
 
@@ -214,6 +232,7 @@ class _WPChessboardState extends State<WPChessboard> {
       child: RotatedBox(
         quarterTurns: (widget.orientation == BoardOrientation.black) ? 2 : 0,
         child: Stack(
+          key: _boardKey,
           children: [
             Squares(
               key: Key("squares_" + widget.size.toString() + "_" + state.fen),
