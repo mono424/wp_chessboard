@@ -1,6 +1,7 @@
 import 'package:chess_vectors_flutter/chess_vectors_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:wp_chessboard/wp_chessboard.dart';
+import 'package:wp_chessboard/models/chess_state.dart';
 import 'src/js_interop.dart';
 
 void main() {
@@ -64,6 +65,12 @@ class _MyAppState extends State<MyApp> {
   final ValueNotifier<String> _darkColor = ValueNotifier<String>(Colors.grey.shade600.toHex());
   final ValueNotifier<double> _size= ValueNotifier<double>(400);
   final ValueNotifier<bool> _orientation= ValueNotifier<bool>(false);
+  final ValueNotifier<bool> _interactive = ValueNotifier<bool>(false);
+  final ValueNotifier<String> _move = ValueNotifier<String>('');
+  final ValueNotifier<String> _tap = ValueNotifier<String>('');
+  final ValueNotifier<String> _hints = ValueNotifier<String>('');
+  int _moveSeq = 0;
+  int _tapSeq = 0;
   final controller = WPChessboardController();
 
   @override
@@ -75,36 +82,64 @@ class _MyAppState extends State<MyApp> {
       lightColor: _lightColor,
       darkColor: _darkColor,
       orientation: _orientation,
+      interactive: _interactive,
+      move: _move,
+      tap: _tap,
+      hints: _hints,
     );
+    // Attach the listeners BEFORE broadcasting: the host (e.g. a SolidJS/React
+    // wrapper) reacts to `flutter-initialized` synchronously and may call setFen
+    // immediately. If the listener isn't attached yet, that first FEN sets
+    // `_fen.value` but never reaches the board → an empty board.
+    listenToState();
     final export = createDartExport(_state);
     broadcastAppEvent('flutter-initialized', export);
-    listenToState();
   }
 
   void listenToState() {
     _fen.addListener(() {
       update(_fen.value);
     });
+    // JS pushes selection + legal-move targets here; render them as board hints.
+    _hints.addListener(() {
+      renderHints(_hints.value);
+    });
   }
 
-  void onPieceStartDrag(SquareInfo square, String piece) {
-    
+  // Report a drag (from→to) to JS as "<from><to>#<seq>" (absolute algebraic
+  // a1..h8). JS validates with chess.js and pushes the result back via setFen.
+  void emitMove(SquareInfo from, SquareInfo to) {
+    _move.value = '${from}${to}#${++_moveSeq}';
   }
 
-  void onPieceTap(SquareInfo square, String piece) {
-    
-  }
-  
-  void showHintFields(SquareInfo square, String piece) {
-    
+  // Report a single tap on a square. JS owns selection + chess logic and decides
+  // whether the tap selects a piece (then pushes hints) or completes a move.
+  void emitTap(SquareInfo square) {
+    _tap.value = '${square}#${++_tapSeq}';
   }
 
-  void onEmptyFieldTap(SquareInfo square) {
-    
-  }
-
-  void onPieceDrop(PieceDropEvent event) {
-    
+  // Render JS-provided hints: "<selected>|<csv targets>" → a fill on the selected
+  // square and a move dot on each legal target. The Hints layer positions by
+  // logical (rank,file), so this is orientation-correct.
+  void renderHints(String value) {
+    final hints = HintMap();
+    final parts = value.split('|');
+    final selected = parts.isNotEmpty ? parts[0] : '';
+    final targets = parts.length > 1 ? parts[1] : '';
+    if (selected.isNotEmpty) {
+      final loc = SquareLocation.fromString(selected);
+      hints.set(loc.rank, loc.file, (size) => Container(
+        width: size,
+        height: size,
+        color: const Color(0x99F4C542),
+      ));
+    }
+    for (final t in targets.split(',')) {
+      if (t.isEmpty) continue;
+      final loc = SquareLocation.fromString(t);
+      hints.set(loc.rank, loc.file, (size) => MoveHint(size: size, color: const Color(0x66000000)));
+    }
+    controller.setHints(hints);
   }
 
   void update(String fen, {bool animated = true}) {
@@ -144,41 +179,165 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       builder: (context, child) => AnimatedBuilder(
-        animation: Listenable.merge([_size, _lightColor, _darkColor, _orientation]),
-        builder: (context, _) => WPChessboard(
-          size: _size.value,
-          orientation: _orientation.value ? BoardOrientation.black : BoardOrientation.white,
-          squareBuilder: createSquareBuilder(
-            HexColor.fromHex(_lightColor.value),
-            HexColor.fromHex(_darkColor.value)
-          ),
-          controller: controller,
-          // Dont pass any onPieceDrop handler to disable drag and drop
-          // onPieceDrop: onPieceDrop,
-          // onPieceTap: onPieceTap,
-          // onPieceStartDrag: onPieceStartDrag,
-          // onEmptyFieldTap: onEmptyFieldTap,
-          turnTopPlayerPieces: false,
-          ghostOnDrag: true,
-          // dropIndicator: DropIndicatorArgs(
-          //   size: value / 2,
-          //   color: Colors.lightBlue.withOpacity(0.24)
-          // ),
-          pieceMap: PieceMap(
-            K: (size) => WhiteKing(size: size),
-            Q: (size) => WhiteQueen(size: size),
-            B: (size) => WhiteBishop(size: size),
-            N: (size) => WhiteKnight(size: size),
-            R: (size) => WhiteRook(size: size),
-            P: (size) => WhitePawn(size: size),
-            k: (size) => BlackKing(size: size),
-            q: (size) => BlackQueen(size: size),
-            b: (size) => BlackBishop(size: size),
-            n: (size) => BlackKnight(size: size),
-            r: (size) => BlackRook(size: size),
-            p: (size) => BlackPawn(size: size),
-          ),
-        ),
+        // _fen is included so InteractiveBoard always sees the current position
+        // (it reads the piece under the pointer from the FEN).
+        animation: Listenable.merge([_fen, _size, _lightColor, _darkColor, _orientation, _interactive]),
+        builder: (context, _) {
+          // The board is display-only (no Draggable / tap handlers): Flutter's
+          // Draggable+DragTarget drop detection is unreliable on web. Interaction
+          // is layered on top via InteractiveBoard, which uses raw pointer events.
+          final board = WPChessboard(
+            size: _size.value,
+            orientation: _orientation.value ? BoardOrientation.black : BoardOrientation.white,
+            squareBuilder: createSquareBuilder(
+              HexColor.fromHex(_lightColor.value),
+              HexColor.fromHex(_darkColor.value),
+            ),
+            controller: controller,
+            turnTopPlayerPieces: false,
+            ghostOnDrag: true,
+            pieceMap: buildPieceMap(),
+          );
+          if (!_interactive.value) return board;
+          return InteractiveBoard(
+            size: _size.value,
+            blackOrientation: _orientation.value,
+            fen: _fen.value,
+            pieceMap: buildPieceMap(),
+            onMove: emitMove,
+            onTap: emitTap,
+            child: board,
+          );
+        },
+      ),
+    );
+  }
+}
+
+PieceMap buildPieceMap() => PieceMap(
+      K: (size) => WhiteKing(size: size),
+      Q: (size) => WhiteQueen(size: size),
+      B: (size) => WhiteBishop(size: size),
+      N: (size) => WhiteKnight(size: size),
+      R: (size) => WhiteRook(size: size),
+      P: (size) => WhitePawn(size: size),
+      k: (size) => BlackKing(size: size),
+      q: (size) => BlackQueen(size: size),
+      b: (size) => BlackBishop(size: size),
+      n: (size) => BlackKnight(size: size),
+      r: (size) => BlackRook(size: size),
+      p: (size) => BlackPawn(size: size),
+    );
+
+// Raw-pointer interaction layer over the (display-only) board. Maps pointer
+// positions to squares (orientation-aware), shows a piece that follows the
+// cursor while dragging, and reports drags (onMove) and taps (onTap). Using a
+// Listener — rather than Flutter's Draggable — makes drag work reliably with a
+// real mouse on the web renderer.
+class InteractiveBoard extends StatefulWidget {
+  final double size;
+  final bool blackOrientation;
+  final String fen;
+  final PieceMap pieceMap;
+  final void Function(SquareInfo from, SquareInfo to) onMove;
+  final void Function(SquareInfo square) onTap;
+  final Widget child;
+
+  const InteractiveBoard({
+    Key? key,
+    required this.size,
+    required this.blackOrientation,
+    required this.fen,
+    required this.pieceMap,
+    required this.onMove,
+    required this.onTap,
+    required this.child,
+  }) : super(key: key);
+
+  @override
+  State<InteractiveBoard> createState() => _InteractiveBoardState();
+}
+
+class _InteractiveBoardState extends State<InteractiveBoard> {
+  static const double _dragSlop = 6.0;
+
+  SquareInfo? _downSquare;
+  String _downPiece = '';
+  Offset _downPos = Offset.zero;
+  Offset? _dragPos; // non-null once a drag is underway (board-local coords)
+
+  double get _sq => widget.size / 8;
+
+  SquareInfo _squareAt(Offset local) {
+    final int col = (local.dx / _sq).floor().clamp(0, 7).toInt();
+    final int rowFromTop = (local.dy / _sq).floor().clamp(0, 7).toInt();
+    final int file = widget.blackOrientation ? 7 - col : col;
+    final int rank = widget.blackOrientation ? rowFromTop : 7 - rowFromTop;
+    return SquareInfo(rank * 8 + file, _sq);
+  }
+
+  String _pieceAt(SquareInfo sq) => ChessState(widget.fen).getEntry(sq.rank, sq.file).piece;
+
+  void _onDown(PointerDownEvent e) {
+    final sq = _squareAt(e.localPosition);
+    _downSquare = sq;
+    _downPos = e.localPosition;
+    _downPiece = _pieceAt(sq);
+    _dragPos = null;
+  }
+
+  void _onMove(PointerMoveEvent e) {
+    if (_downSquare == null || _downPiece.isEmpty) return;
+    if (_dragPos == null && (e.localPosition - _downPos).distance < _dragSlop) return;
+    setState(() => _dragPos = e.localPosition);
+  }
+
+  void _onUp(PointerUpEvent e) {
+    final from = _downSquare;
+    final wasDragging = _dragPos != null;
+    if (from != null) {
+      if (wasDragging) {
+        final to = _squareAt(e.localPosition);
+        if (to.index != from.index) {
+          widget.onMove(from, to);
+        }
+      } else {
+        widget.onTap(from);
+      }
+    }
+    setState(() {
+      _downSquare = null;
+      _downPiece = '';
+      _dragPos = null;
+    });
+  }
+
+  void _onCancel(PointerCancelEvent e) {
+    setState(() {
+      _downSquare = null;
+      _downPiece = '';
+      _dragPos = null;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Listener(
+      behavior: HitTestBehavior.opaque,
+      onPointerDown: _onDown,
+      onPointerMove: _onMove,
+      onPointerUp: _onUp,
+      onPointerCancel: _onCancel,
+      child: Stack(
+        children: [
+          widget.child,
+          if (_dragPos != null && _downPiece.isNotEmpty)
+            Positioned(
+              left: _dragPos!.dx - _sq / 2,
+              top: _dragPos!.dy - _sq / 2,
+              child: IgnorePointer(child: widget.pieceMap.get(_downPiece)(_sq)),
+            ),
+        ],
       ),
     );
   }

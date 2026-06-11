@@ -102,6 +102,17 @@ WPChessboard(
 
 I know this is very short, for more information checkout the example :).
 
+## Web embedding (React / SolidJS)
+
+The board can also be embedded in web apps by running the Flutter build (see
+`web_example/build.sh`) and loading it through a thin wrapper component. Two
+ready-to-use examples are included:
+
+- [`react_example`](react_example) — React wrapper (`size`, `fen`).
+- [`solid_example`](solid_example) — SolidJS wrapper exposing the full state
+  manager (`size`, `fen`, `orientation`, `lightColor`, `darkColor`, plus
+  `onFenChanged`).
+
 ## Additional information
 
 Every contribution is very welcome.
