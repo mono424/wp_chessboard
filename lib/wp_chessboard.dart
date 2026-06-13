@@ -250,6 +250,7 @@ class _WPChessboardState extends State<WPChessboard> {
                 state: state,
                 onPieceTap: wrappedPieceTap,
                 onPieceStartDrag: wrappedPieceStartDrag,
+                onPieceDrop: wrappedPieceDrop,
                 disableDrag: widget.onPieceDrop == null,
                 ghostOnDrag: widget.ghostOnDrag,
                 onEmptyFieldTap: wrappedEmptyFieldTap,
@@ -283,9 +284,13 @@ class _WPChessboardState extends State<WPChessboard> {
             ),
 
             Positioned.fill(
+              // The drop itself is handled by the Draggable's onDragEnd in
+              // Pieces (reliable on web); DropTargets is kept only for the
+              // optional hover drop-indicator, so it must NOT also emit the drop
+              // (that would double-fire onPieceDrop).
               child: DropTargets(
                 size: widget.size,
-                onPieceDrop: wrappedPieceDrop,
+                onPieceDrop: null,
                 dropIndicator: widget.dropIndicator,
               ),
             ),

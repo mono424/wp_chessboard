@@ -69,6 +69,11 @@ class _MyAppState extends State<MyApp> {
   final ValueNotifier<String> _move = ValueNotifier<String>('');
   final ValueNotifier<String> _tap = ValueNotifier<String>('');
   final ValueNotifier<String> _hints = ValueNotifier<String>('');
+  final ValueNotifier<String> _arrows = ValueNotifier<String>('');
+  // Whether setFen animates the piece move (slide) or snaps. Analysis/display
+  // hosts set this false via StateManager.setAnimated to avoid per-move animation
+  // repaints when stepping through a game. Defaults to true (e.g. puzzle play).
+  final ValueNotifier<bool> _animate = ValueNotifier<bool>(true);
   int _moveSeq = 0;
   int _tapSeq = 0;
   final controller = WPChessboardController();
@@ -86,6 +91,8 @@ class _MyAppState extends State<MyApp> {
       move: _move,
       tap: _tap,
       hints: _hints,
+      arrows: _arrows,
+      animate: _animate,
     );
     // Attach the listeners BEFORE broadcasting: the host (e.g. a SolidJS/React
     // wrapper) reacts to `flutter-initialized` synchronously and may call setFen
@@ -98,11 +105,15 @@ class _MyAppState extends State<MyApp> {
 
   void listenToState() {
     _fen.addListener(() {
-      update(_fen.value);
+      update(_fen.value, animated: _animate.value);
     });
     // JS pushes selection + legal-move targets here; render them as board hints.
     _hints.addListener(() {
       renderHints(_hints.value);
+    });
+    // JS pushes arrows here (e.g. engine candidate moves); render them on top.
+    _arrows.addListener(() {
+      renderArrows(_arrows.value);
     });
   }
 
@@ -146,33 +157,24 @@ class _MyAppState extends State<MyApp> {
     controller.setFen(fen, animation: animated);
   }
 
-  void addArrows() {
-    controller.setArrows([
-      Arrow(
-        from: SquareLocation.fromString("b1"),
-        to: SquareLocation.fromString("c3"),
-      ),
-      Arrow(
-        from: SquareLocation.fromString("g1"),
-        to: SquareLocation.fromString("f3"),
-        color: Colors.red
-      )
-    ]);
-  }
-
-  void removeArrows() {
-    controller.setArrows([]);
-  }
-
-  BoardOrientation orienatation = BoardOrientation.white;
-  void toggleArrows() {
-    setState(() {
-      if (orienatation == BoardOrientation.white) {
-        orienatation = BoardOrientation.black;
-      } else {
-        orienatation = BoardOrientation.white;
-      }
-    });
+  // Render JS-provided arrows: a comma-separated list of "<from><to>[:<AARRGGBB>]"
+  // entries (e.g. "e2e4:ff5e6ad2,d2d4:805e6ad2"). Each entry is two squares plus
+  // an optional 8-digit ARGB hex color (defaults to green). Empty → no arrows.
+  void renderArrows(String value) {
+    final arrows = <Arrow>[];
+    for (final entry in value.split(',')) {
+      if (entry.length < 4) continue;
+      final from = entry.substring(0, 2);
+      final to = entry.substring(2, 4);
+      final colon = entry.indexOf(':');
+      final hex = colon >= 0 ? entry.substring(colon + 1) : '';
+      arrows.add(Arrow(
+        from: SquareLocation.fromString(from),
+        to: SquareLocation.fromString(to),
+        color: hex.isNotEmpty ? HexColor.fromHex(hex) : Colors.green,
+      ));
+    }
+    controller.setArrows(arrows);
   }
 
   @override

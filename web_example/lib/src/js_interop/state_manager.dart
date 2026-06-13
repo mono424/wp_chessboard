@@ -13,7 +13,9 @@ class StateManager {
     required ValueNotifier<String> move,
     required ValueNotifier<String> tap,
     required ValueNotifier<String> hints,
-  })  : _fen = fen, _size = size, _lightColor = lightColor, _darkColor = darkColor, _orientation = orientation, _interactive = interactive, _move = move, _tap = tap, _hints = hints;
+    required ValueNotifier<String> arrows,
+    required ValueNotifier<bool> animate,
+  })  : _fen = fen, _size = size, _lightColor = lightColor, _darkColor = darkColor, _orientation = orientation, _interactive = interactive, _move = move, _tap = tap, _hints = hints, _arrows = arrows, _animate = animate;
 
   final ValueNotifier<String> _fen;
   final ValueNotifier<double> _size;
@@ -24,6 +26,20 @@ class StateManager {
   final ValueNotifier<String> _move;
   final ValueNotifier<String> _tap;
   final ValueNotifier<String> _hints;
+  final ValueNotifier<String> _arrows;
+  final ValueNotifier<bool> _animate;
+
+  // When false, setFen snaps pieces to the new position instead of sliding them
+  // (a 200ms AnimatedPositioned per move). Display-only/analysis hosts disable
+  // this: each animated move repaints over several frames, so stepping through a
+  // game storms the main thread and freezes the page on mobile. Defaults to true.
+  bool getAnimated() {
+    return _animate.value;
+  }
+
+  void setAnimated(bool value) {
+    _animate.value = value;
+  }
 
   String getFen() {
     return _fen.value;
@@ -105,5 +121,13 @@ class StateManager {
   // board renders the selected square as a fill and each target as a move dot.
   void setMoveHints(String selected, String targets) {
     _hints.value = '$selected|$targets';
+  }
+
+  // Called by JS to draw arrows on the board (e.g. engine candidate moves). The
+  // value is a comma-separated list of "<from><to>[:<AARRGGBB>]" entries — from
+  // and to are squares (a1..h8) and the optional 8-digit hex is an ARGB color.
+  // e.g. "e2e4:ff5e6ad2,d2d4:805e6ad2". Empty string clears all arrows.
+  void setArrows(String value) {
+    _arrows.value = value;
   }
 }

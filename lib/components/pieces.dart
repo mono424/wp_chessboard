@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:wp_chessboard/components/animated_piece_wrap.dart';
 import 'package:wp_chessboard/models/board_orientation.dart';
 import 'package:wp_chessboard/models/chess_state.dart';
+import 'package:wp_chessboard/models/piece_drop_event.dart';
 import 'package:wp_chessboard/models/piece_map.dart';
 import 'package:wp_chessboard/models/square_info.dart';
 
@@ -15,12 +16,13 @@ class Pieces extends StatelessWidget {
   final void Function(SquareInfo square, String piece)? onPieceTap;
   final void Function(SquareInfo square, String piece)? onPieceStartDrag;
   final void Function(SquareInfo square)? onEmptyFieldTap;
+  final void Function(PieceDropEvent)? onPieceDrop;
   final bool animated;
   final bool disableDrag;
   final bool ghostOnDrag;
   final bool turnTopPlayerPieces;
 
-  const Pieces({Key? key, required this.size, required this.pieceMap, required this.state, this.onPieceTap, this.onEmptyFieldTap, this.onPieceStartDrag, required this.animated, required this.orientation, required this.disableDrag, required this.ghostOnDrag, required this.turnTopPlayerPieces}) : super(key: key);
+  const Pieces({Key? key, required this.size, required this.pieceMap, required this.state, this.onPieceTap, this.onEmptyFieldTap, this.onPieceStartDrag, this.onPieceDrop, required this.animated, required this.orientation, required this.disableDrag, required this.ghostOnDrag, required this.turnTopPlayerPieces}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +72,22 @@ class Pieces extends StatelessWidget {
                 quarterTurns: ((orientation == BoardOrientation.black) ? 2 : 0) + (shouldTurnPiece ? 2 : 0),
                 child: disableDrag ? pieceWidget : Draggable<SquareInfo>(
                   onDragStarted: onPieceStartDrag != null ? () => onPieceStartDrag!(info, pieceEntry.piece) : null,
+                  // Resolve the drop from the release position rather than relying
+                  // on DragTarget hit-testing (which is unreliable on Flutter web).
+                  // onDragEnd always fires on pointer-up; we map the dropped
+                  // feedback's centre back to a board square and emit the move.
+                  onDragEnd: onPieceDrop != null ? (details) {
+                    final RenderBox? boardBox = context.findRenderObject() as RenderBox?;
+                    if (boardBox == null) return;
+                    final Offset local = boardBox.globalToLocal(details.offset);
+                    final int toFile = ((local.dx + squareSize / 2) / squareSize).floor();
+                    final int toRankFromTop = ((local.dy + squareSize / 2) / squareSize).floor();
+                    final int toRank = 7 - toRankFromTop;
+                    if (toFile < 0 || toFile > 7 || toRank < 0 || toRank > 7) return;
+                    final SquareInfo target = SquareInfo(toRank * 8 + toFile, squareSize);
+                    if (target.index == info.index) return;
+                    onPieceDrop!(PieceDropEvent(info, target));
+                  } : null,
                   childWhenDragging: ghostOnDrag ? Opacity(opacity: 0.2, child: pieceWidget) : const SizedBox(),
                   data: info,
                   feedback: pieceWidget,
