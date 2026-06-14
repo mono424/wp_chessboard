@@ -1,3 +1,5 @@
+import 'dart:js_interop';
+
 import 'package:chess_vectors_flutter/chess_vectors_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:wp_chessboard/wp_chessboard.dart';
@@ -99,7 +101,7 @@ class _MyAppState extends State<MyApp> {
     // immediately. If the listener isn't attached yet, that first FEN sets
     // `_fen.value` but never reaches the board → an empty board.
     listenToState();
-    final export = createDartExport(_state);
+    final export = createJSInteropWrapper(_state);
     broadcastAppEvent('flutter-initialized', export);
   }
 

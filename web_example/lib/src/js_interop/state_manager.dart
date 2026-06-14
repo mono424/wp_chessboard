@@ -1,5 +1,6 @@
+import 'dart:js_interop';
+
 import 'package:flutter/foundation.dart';
-import 'package:js/js.dart';
 
 @JSExport()
 class StateManager {
@@ -81,8 +82,10 @@ class StateManager {
     _darkColor.value = value;
   }
 
-  void onFenChanged(VoidCallback f) {
-    _fen.addListener(f);
+  // Callbacks come from JS, so they arrive as JSFunction (not a Dart
+  // VoidCallback) under dart:js_interop; invoke them via callAsFunction.
+  void onFenChanged(JSFunction f) {
+    _fen.addListener(() => f.callAsFunction());
   }
 
   // When true, pieces can be dragged (the board reports drops via [getMove] /
@@ -102,8 +105,8 @@ class StateManager {
     return _move.value;
   }
 
-  void onMove(VoidCallback f) {
-    _move.addListener(f);
+  void onMove(JSFunction f) {
+    _move.addListener(() => f.callAsFunction());
   }
 
   // A single tap on a square, encoded as "<square>#<seq>" (e.g. "e2#3"). JS uses
@@ -112,8 +115,8 @@ class StateManager {
     return _tap.value;
   }
 
-  void onTap(VoidCallback f) {
-    _tap.addListener(f);
+  void onTap(JSFunction f) {
+    _tap.addListener(() => f.callAsFunction());
   }
 
   // Called by JS to highlight the current selection + its legal targets. [selected]

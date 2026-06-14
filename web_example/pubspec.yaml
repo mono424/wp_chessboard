@@ -4,14 +4,14 @@ publish_to: 'none'
 version: 0.1.0
 
 environment:
-  sdk: '>=2.19.0-444.6.beta <3.0.0'
+  sdk: '>=3.4.0 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
   wp_chessboard:
     path: "../"
-  js: ^0.6.7
+  web: ^1.0.0
   chess_vectors_flutter: ^1.0.18
 
 dev_dependencies:
