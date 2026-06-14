@@ -1,7 +1,6 @@
 library wp_chessboard;
 
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:wp_chessboard/models/arrow.dart';
@@ -42,41 +41,43 @@ class ArrowPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    for (Arrow arrow in arrows) {
+    final double squareWidth = size.width / 8;
+    // Proportional to the square so arrows look right at any board size.
+    final double shaftWidth = squareWidth * 0.16;
+    final double headLength = squareWidth * 0.36;
+    final double headHalfWidth = squareWidth * 0.20;
 
-      double squareWidth = size.width / 8;
-      double arrowHeadLen = squareWidth * 0.24;
-      PointMode pointMode = PointMode.polygon;
-      Offset from = getPosition(arrow.from);
-      Offset to = getPosition(arrow.to);
-      ParagraphBuilder labelBuilder = ParagraphBuilder(ParagraphStyle(
-        textAlign: TextAlign.center,
-        fontSize: 12,
-        fontWeight: FontWeight.bold,
-      ));
+    for (final Arrow arrow in arrows) {
+      final Offset from = getPosition(arrow.from);
+      final Offset to = getPosition(arrow.to);
+      if (from == to) continue;
 
-      // Line
-      double angle = atan2(to.dy - from.dy, to.dx - from.dx);
-      Paint linePaint = Paint()
+      final double angle = atan2(to.dy - from.dy, to.dx - from.dx);
+      final Offset dir = Offset(cos(angle), sin(angle));
+      // Where the filled head starts; the shaft stops here so it doesn't poke
+      // through the tip.
+      final Offset headBase = to - dir * headLength;
+
+      // Shaft. Explicit stroke style: drawPoints/fill don't render a visible
+      // line on the CanvasKit web renderer, which is why arrows were invisible.
+      final Paint shaftPaint = Paint()
         ..color = arrow.color
-        ..strokeWidth = 4
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = shaftWidth
         ..strokeCap = StrokeCap.round;
-      canvas.drawPoints(pointMode, [from, to], linePaint);
+      canvas.drawLine(from, headBase, shaftPaint);
 
-      // Arrow
-      canvas.drawPoints(pointMode, [Offset(to.dx - arrowHeadLen * cos(angle - pi / 6), to.dy - arrowHeadLen * sin(angle - pi / 6)), to], linePaint);
-      canvas.drawPoints(pointMode, [Offset(to.dx - arrowHeadLen * cos(angle + pi / 6), to.dy - arrowHeadLen * sin(angle + pi / 6)), to], linePaint);
-
-      // Circle
-      // Paint circlePaint1 = Paint()..color = arrow.color;
-      // Paint circlePaint2 = Paint()..color = Colors.white;
-      // canvas.drawCircle(to, 14, circlePaint1);
-      // canvas.drawCircle(to, 10, circlePaint2);
-
-      canvas.drawParagraph(
-          labelBuilder.build()
-            ..layout(ParagraphConstraints(width: squareWidth)),
-          Offset(to.dx - (squareWidth / 2), to.dy - 6));
+      // Filled triangular head at the destination square.
+      final Offset perp = Offset(-dir.dy, dir.dx) * headHalfWidth;
+      final Path head = Path()
+        ..moveTo(to.dx, to.dy)
+        ..lineTo(headBase.dx + perp.dx, headBase.dy + perp.dy)
+        ..lineTo(headBase.dx - perp.dx, headBase.dy - perp.dy)
+        ..close();
+      final Paint headPaint = Paint()
+        ..color = arrow.color
+        ..style = PaintingStyle.fill;
+      canvas.drawPath(head, headPaint);
     }
   }
 
