@@ -24,13 +24,6 @@
   <link rel="icon" type="image/png" href="favicon.png"/>
 
   <title>wp_chessboard</title>
-
-  <script>
-    // The value below is injected by flutter build, do not touch.
-    var serviceWorkerVersion = null;
-  </script>
-  <!-- This script adds the flutter initialization JS code -->
-  <script src="flutter.js" defer></script>
 </head>
 <body>
   <script>
@@ -43,17 +36,13 @@
         console.log('New fen: ', state.getFen());
       });
     });
-    window.addEventListener('load', function(ev) {
-      // Download main.dart.js
-      _flutter.loader.loadEntrypoint({
-        serviceWorker: {
-          serviceWorkerVersion: serviceWorkerVersion,
-        },
-        onEntrypointLoaded: async function(engineInitializer) {
-          await engineInitializer.autoStart();
-        }
-      });
-    });
   </script>
+  <!--
+    Modern Flutter web bootstrap. `flutter build web` replaces this token with a
+    script that sets `_flutter.buildConfig` and calls `_flutter.loader.load()`,
+    replacing the deprecated `flutter.js` + `FlutterLoader.loadEntrypoint` flow
+    (and its deprecated service-worker registration).
+  -->
+  {{flutter_bootstrap_js}}
 </body>
 </html>
