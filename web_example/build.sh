@@ -1,4 +1,8 @@
-flutter build web
+# --wasm emits the dart2wasm/skwasm build AND a dart2js/canvaskit fallback.
+# The skwasm build is auto-selected on Blink (Chrome/Edge/Android Chrome);
+# Safari/WebKit and Firefox fall back to main.dart.js. skwasm runs
+# single-threaded — no cross-origin isolation (COOP/COEP) required.
+flutter build web --wasm
 
 rm -rf ../react_example/public/flutter
 mkdir ../react_example/public/flutter
