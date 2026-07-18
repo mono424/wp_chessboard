@@ -9,7 +9,9 @@
     "serve": "vite preview"
   },
   "dependencies": {
-    "solid-js": "^1.8.0"
+    "chess.js": "^1.0.0",
+    "solid-js": "^1.8.0",
+    "wp-chessboard-solid": "file:../web"
   },
   "devDependencies": {
     "vite": "^5.0.0",
