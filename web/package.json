@@ -1,7 +1,7 @@
 {
   "name": "wp-chessboard-solid",
-  "version": "0.1.0",
-  "description": "Web-native SolidJS chessboard — DOM/SVG port of the wp_chessboard Flutter widget. No wasm, no runtime dependencies.",
+  "version": "0.2.0",
+  "description": "Web-native SolidJS 2 chessboard: DOM/SVG port of the wp_chessboard Flutter widget. No wasm, no runtime dependencies.",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -30,14 +30,17 @@
     "prepublishOnly": "npm test && npm run build"
   },
   "peerDependencies": {
-    "solid-js": "^1.8.0"
+    "solid-js": "^2.0.0-rc.1",
+    "@solidjs/web": "^2.0.0-rc.1"
   },
   "devDependencies": {
-    "solid-js": "^1.8.22",
+    "@solidjs/signals": "2.0.0-rc.1",
+    "@solidjs/vite-plugin": "3.0.0-next.31",
+    "@solidjs/web": "2.0.0-rc.1",
+    "solid-js": "2.0.0-rc.1",
     "typescript": "^5.5.4",
-    "vite": "^5.4.8",
-    "vite-plugin-solid": "^2.10.2",
-    "vitest": "^2.1.2"
+    "vite": "^6.0.0",
+    "vitest": "^3.0.0"
   },
   "keywords": [
     "chess",

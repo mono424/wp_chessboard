@@ -1,5 +1,5 @@
 import { defineConfig } from "vite";
-import solid from "vite-plugin-solid";
+import solid from "@solidjs/vite-plugin";
 
 export default defineConfig({
   plugins: [solid()],
@@ -10,7 +10,13 @@ export default defineConfig({
       fileName: () => "index.js",
     },
     rollupOptions: {
-      external: ["solid-js", "solid-js/web", "solid-js/store"],
+      external: [
+        "solid-js",
+        "@solidjs/web",
+        "@solidjs/signals",
+        /^solid-js\//,
+        /^@solidjs\//,
+      ],
     },
     target: "es2020",
     minify: false,

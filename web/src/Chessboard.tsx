@@ -1,15 +1,15 @@
 import {
   For,
-  Index,
   Show,
   createEffect,
   createMemo,
   createSignal,
-  mergeProps,
-  onMount,
+  merge,
+  onSettled,
   untrack,
 } from "solid-js";
-import type { Component, JSX } from "solid-js";
+import type { Component } from "solid-js";
+import type { JSX } from "@solidjs/web";
 import { Arrows } from "./Arrows";
 import { Hints } from "./Hints";
 import { indexToXY, normalizeOrientation, pointToIndex } from "./coords";
@@ -40,7 +40,7 @@ interface PiecesState {
 }
 
 export const Chessboard: Component<ChessboardProps> = (rawProps) => {
-  const props = mergeProps(
+  const props = merge(
     {
       size: 400,
       lightColor: "#EEEEEE", // grey.shade200
@@ -90,14 +90,15 @@ export const Chessboard: Component<ChessboardProps> = (rawProps) => {
   const shortcuts = createShortcuts(shortcutOpts, activateSquare);
 
   // Notify fen changes (skip the initial value) and abort any in-flight drag.
-  createEffect<string>((prevFen) => {
-    const fen = props.fen;
-    if (prevFen !== undefined && prevFen !== fen) {
-      setDrag(null);
-      props.onFenChanged?.(fen);
-    }
-    return fen;
-  });
+  createEffect(
+    () => props.fen,
+    (fen, prevFen) => {
+      if (prevFen !== undefined && prevFen !== fen) {
+        setDrag(null);
+        props.onFenChanged?.(fen);
+      }
+    },
+  );
 
   const boardPos = (e: PointerEvent) => {
     const rect = root.getBoundingClientRect();
@@ -234,7 +235,7 @@ export const Chessboard: Component<ChessboardProps> = (rawProps) => {
     >
       {/* Squares */}
       <div style={{ position: "absolute", inset: "0" }}>
-        <Index each={squareInfos()}>
+        <For each={squareInfos()} keyed={false}>
           {(info) => (
             <div style={positioned(info().index)}>
               {props.renderSquare ? (
@@ -253,7 +254,7 @@ export const Chessboard: Component<ChessboardProps> = (rawProps) => {
               )}
             </div>
           )}
-        </Index>
+        </For>
       </div>
 
       {/* Pieces */}
@@ -265,7 +266,7 @@ export const Chessboard: Component<ChessboardProps> = (rawProps) => {
             const dest = indexToXY(p.index, s, o);
             const start = animate ? indexToXY(p.fromIndex!, s, o) : dest;
             let el!: HTMLDivElement;
-            onMount(() => {
+            onSettled(() => {
               if (!animate) return;
               el.getBoundingClientRect();
               el.style.transition = `transform ${props.animationDurationMs}ms ease-in-out`;
