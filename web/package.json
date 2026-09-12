@@ -1,6 +1,6 @@
 {
   "name": "wp-chessboard-solid",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Web-native SolidJS 2 chessboard: DOM/SVG port of the wp_chessboard Flutter widget. No wasm, no runtime dependencies.",
   "license": "MIT",
   "repository": {

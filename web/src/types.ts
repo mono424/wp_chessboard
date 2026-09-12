@@ -24,6 +24,20 @@ export interface Arrow {
   from: Square;
   to: Square;
   color?: string;
+  /** Stroke width in px. Default 4. */
+  width?: number;
+  /**
+   * When set, an under-stroke of this colour is drawn first, `width + 3` thick,
+   * giving the arrow a dark edge so it stays legible over either square colour.
+   */
+  outline?: string;
+  /**
+   * Draw the arrow on rather than popping it in: the shaft extends from origin
+   * to destination and the head fades in as it lands. `true` uses the board's
+   * `animationDurationMs`; a number overrides it. Leave unset for arrows that
+   * update often (engine candidate lines), which would otherwise strobe.
+   */
+  animate?: boolean | number;
 }
 
 export interface MoveHints {

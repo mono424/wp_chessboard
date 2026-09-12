@@ -335,6 +335,7 @@ export const Chessboard: Component<ChessboardProps> = (rawProps) => {
         size={props.size}
         squareSize={squareSize()}
         orientation={orientation()}
+        animationDurationMs={props.animationDurationMs}
       />
 
       {/* Drop indicator */}
