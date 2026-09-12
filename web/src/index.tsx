@@ -29,5 +29,6 @@ export type {
   ShortcutOptions,
   Square,
   SquareInfo,
+  SquareMark,
   TapEvent,
 } from "./types";

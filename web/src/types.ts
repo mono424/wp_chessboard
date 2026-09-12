@@ -40,6 +40,30 @@ export interface Arrow {
   animate?: boolean | number;
 }
 
+/**
+ * A marked square: a tint under the pieces, and/or a badge on top of
+ * everything. Use it to say something about a square itself (which move was
+ * just played, and what the analysis thinks of it) rather than about a path,
+ * which is what `Arrow` is for.
+ */
+export interface SquareMark {
+  square: Square;
+  /** Square tint, drawn UNDER the pieces. Any CSS colour. */
+  fill?: string;
+  /** Inset border drawn with the fill, for a square that needs more emphasis. */
+  ring?: string;
+  /** Corner glyph drawn OVER the pieces and arrows. */
+  badge?: {
+    text: string;
+    /** Glyph colour. */
+    color: string;
+    /** Badge disc colour. */
+    background: string;
+  };
+  /** Animate the mark in. `true` uses the board's `animationDurationMs`. */
+  animate?: boolean | number;
+}
+
 export interface MoveHints {
   selected?: Square;
   targets?: Square[];
@@ -78,6 +102,8 @@ export interface ChessboardProps {
   animationDurationMs?: number;
   moveHints?: MoveHints;
   arrows?: Arrow[];
+  /** Marked squares: tints under the pieces, badges over everything. */
+  marks?: SquareMark[];
   /** Show origin piece at 20% opacity while dragging. Default true. */
   ghostOnDrag?: boolean;
   /** Highlight the hovered square while dragging. */

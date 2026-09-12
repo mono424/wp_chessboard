@@ -11,6 +11,7 @@ import {
 import type { Component } from "solid-js";
 import type { JSX } from "@solidjs/web";
 import { Arrows } from "./Arrows";
+import { Marks } from "./Marks";
 import { Hints } from "./Hints";
 import { indexToXY, normalizeOrientation, pointToIndex } from "./coords";
 import type { Orientation } from "./coords";
@@ -257,6 +258,16 @@ export const Chessboard: Component<ChessboardProps> = (rawProps) => {
         </For>
       </div>
 
+      {/* Square tints — under the pieces, so a marked square reads as coloured
+          board and not as a sheet lying over the piece standing on it. */}
+      <Marks
+        marks={props.marks}
+        layer="fill"
+        squareSize={squareSize()}
+        orientation={orientation()}
+        animationDurationMs={props.animationDurationMs}
+      />
+
       {/* Pieces */}
       <div style={{ position: "absolute", inset: "0" }}>
         <For each={piecesState().list}>
@@ -333,6 +344,15 @@ export const Chessboard: Component<ChessboardProps> = (rawProps) => {
       <Arrows
         arrows={props.arrows}
         size={props.size}
+        squareSize={squareSize()}
+        orientation={orientation()}
+        animationDurationMs={props.animationDurationMs}
+      />
+
+      {/* Mark badges — above the arrows, since being read is the whole job. */}
+      <Marks
+        marks={props.marks}
+        layer="badge"
         squareSize={squareSize()}
         orientation={orientation()}
         animationDurationMs={props.animationDurationMs}
