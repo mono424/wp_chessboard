@@ -1,7 +1,6 @@
 library wp_chessboard;
 
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:wp_chessboard/models/arrow.dart';
@@ -40,43 +39,49 @@ class ArrowPainter extends CustomPainter {
     );
   }
 
+  /// The stroke width of an arrow that does not ask for one.
+  static const double defaultWidth = 4;
+
   @override
   void paint(Canvas canvas, Size size) {
+    final double squareWidth = size.width / 8;
     for (Arrow arrow in arrows) {
+      final double width = arrow.width ?? defaultWidth;
+      // The head grows a little with the stroke, or a thick arrow ends in a
+      // stub. At the default width it is the length it always had.
+      final double arrowHeadLen = squareWidth * 0.24 + (width - defaultWidth) * 1.5;
+      final Offset from = getPosition(arrow.from);
+      final Offset to = getPosition(arrow.to);
+      final double angle = atan2(to.dy - from.dy, to.dx - from.dx);
 
-      double squareWidth = size.width / 8;
-      double arrowHeadLen = squareWidth * 0.24;
-      PointMode pointMode = PointMode.polygon;
-      Offset from = getPosition(arrow.from);
-      Offset to = getPosition(arrow.to);
-      ParagraphBuilder labelBuilder = ParagraphBuilder(ParagraphStyle(
-        textAlign: TextAlign.center,
-        fontSize: 12,
-        fontWeight: FontWeight.bold,
-      ));
+      // Shaft and both barbs as one path.
+      final Path path = Path()
+        ..moveTo(from.dx, from.dy)
+        ..lineTo(to.dx, to.dy)
+        ..moveTo(to.dx - arrowHeadLen * cos(angle - pi / 6), to.dy - arrowHeadLen * sin(angle - pi / 6))
+        ..lineTo(to.dx, to.dy)
+        ..lineTo(to.dx - arrowHeadLen * cos(angle + pi / 6), to.dy - arrowHeadLen * sin(angle + pi / 6));
+      final Paint linePaint = Paint()
+        ..color = arrow.color.withValues(alpha: 1)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = width
+        ..strokeCap = StrokeCap.round
+        ..strokeJoin = StrokeJoin.round;
 
-      // Line
-      double angle = atan2(to.dy - from.dy, to.dx - from.dx);
-      Paint linePaint = Paint()
-        ..color = arrow.color
-        ..strokeWidth = 4
-        ..strokeCap = StrokeCap.round;
-      canvas.drawPoints(pointMode, [from, to], linePaint);
-
-      // Arrow
-      canvas.drawPoints(pointMode, [Offset(to.dx - arrowHeadLen * cos(angle - pi / 6), to.dy - arrowHeadLen * sin(angle - pi / 6)), to], linePaint);
-      canvas.drawPoints(pointMode, [Offset(to.dx - arrowHeadLen * cos(angle + pi / 6), to.dy - arrowHeadLen * sin(angle + pi / 6)), to], linePaint);
-
-      // Circle
-      // Paint circlePaint1 = Paint()..color = arrow.color;
-      // Paint circlePaint2 = Paint()..color = Colors.white;
-      // canvas.drawCircle(to, 14, circlePaint1);
-      // canvas.drawCircle(to, 10, circlePaint2);
-
-      canvas.drawParagraph(
-          labelBuilder.build()
-            ..layout(ParagraphConstraints(width: squareWidth)),
-          Offset(to.dx - (squareWidth / 2), to.dy - 6));
+      // A translucent arrow is drawn opaque into a layer that is then faded as
+      // a whole. Stroking it translucent directly would blend the overlapping
+      // shaft and barbs twice and leave a darker tip.
+      final double alpha = arrow.color.a;
+      if (alpha >= 1) {
+        canvas.drawPath(path, linePaint);
+        continue;
+      }
+      canvas.saveLayer(
+        path.getBounds().inflate(width),
+        Paint()..color = Color.fromRGBO(0, 0, 0, alpha),
+      );
+      canvas.drawPath(path, linePaint);
+      canvas.restore();
     }
   }
 

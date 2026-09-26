@@ -155,8 +155,11 @@ export const Arrows: Component<{
             if (!a) return 0;
             return a === true ? (props.animationDurationMs ?? 200) : a;
           };
+          // Opacity goes on the group, not the stroke colour: the shaft, the
+          // barbs and the outline overlap, and a translucent stroke would
+          // blend each overlap twice and darken the tip.
           return (
-            <>
+            <g opacity={arrow.opacity}>
               <Show when={arrow.outline}>
                 {(outline) => (
                   <ArrowLines
@@ -179,7 +182,7 @@ export const Arrows: Component<{
                 durationMs={durationMs()}
                 length={length()}
               />
-            </>
+            </g>
           );
         }}
       </For>

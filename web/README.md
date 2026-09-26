@@ -56,7 +56,7 @@ FEN diff, exactly like the Flutter widget.
 | `animated` | `boolean` | `true` | Animate piece slides on fen change |
 | `animationDurationMs` | `number` | `200` | Slide duration |
 | `moveHints` | `{ selected?, targets? }` | — | Selected-square fill + move-target dots |
-| `arrows` | `{ from, to, color? }[]` | — | Arrows drawn over the board |
+| `arrows` | `{ from, to, color?, width?, outline?, opacity?, animate? }[]` | — | Arrows drawn over the board |
 | `ghostOnDrag` | `boolean` | `false` | Show origin piece at 20% opacity while dragging |
 | `dropIndicator` | `boolean \| { color? }` | off | Highlight hovered square while dragging |
 | `shortcuts` | `boolean \| { commitMode?, highlightColor? }` | off | Keyboard square selection: `a`–`h`, `1`–`8`, space commits (`commitMode: "auto"` commits on the digit) |

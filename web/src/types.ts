@@ -32,6 +32,11 @@ export interface Arrow {
    */
   outline?: string;
   /**
+   * 0..1, applied to the arrow as a whole (shaft, head and outline together),
+   * so a faded arrow has an even tint. Default 1.
+   */
+  opacity?: number;
+  /**
    * Draw the arrow on rather than popping it in: the shaft extends from origin
    * to destination and the head fades in as it lands. `true` uses the board's
    * `animationDurationMs`; a number overrides it. Leave unset for arrows that
