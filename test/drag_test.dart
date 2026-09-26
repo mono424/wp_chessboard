@@ -4,9 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:wp_chessboard/wp_chessboard.dart';
 
 // Verifies the drag-to-move path: dragging a piece fires onPieceDrop with the
-// correct from/to squares. The drop is resolved by the Draggable's onDragEnd
-// (mapping the release position back to a square), so this exercises that logic
-// including the board's orientation RotatedBox.
+// correct from/to squares, for touch and mouse drags.
 void main() {
   PieceMap buildPieceMap() {
     Widget b(double size) => Container(width: size, height: size, color: const Color(0xFF888888));
