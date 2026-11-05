@@ -62,6 +62,8 @@ FEN diff, exactly like the Flutter widget.
 | `shortcuts` | `boolean \| { commitMode?, highlightColor? }` | off | Keyboard square selection: `a`–`h`, `1`–`8`, space commits (`commitMode: "auto"` commits on the digit) |
 | `turnTopPlayerPieces` | `boolean` | `false` | Rotate the top player's pieces 180° |
 | `pieces` | `Partial<Record<PieceChar, (size) => JSX.Element>>` | cburnett | Per-piece renderer overrides |
+| `renderPiece` | `({ piece, square, size }) => JSX.Element \| undefined` | | Renderer that knows the square, for art belonging to one piece. Return nothing to fall back to `pieces` |
+| `animateMove` | `({ piece, from, to, size, dx, dy, el }) => { finished, cancel } \| undefined` | | Replace one piece's slide. Return nothing to keep the slide. `el` stays on `from` until `finished` resolves |
 | `renderSquare` | `(info: SquareInfo) => JSX.Element` | — | Custom square renderer |
 
 Events: `onMove({from, to, piece})`, `onTap({square, piece})`,

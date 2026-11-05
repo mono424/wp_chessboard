@@ -9,6 +9,35 @@ export type Square = string;
 
 export type PieceRenderer = (size: number) => JSX.Element;
 
+/** What `renderPiece` is being asked to draw. */
+export interface PieceRenderInfo {
+  piece: PieceChar;
+  /** The square it stands on. While dragging, the square it was lifted from. */
+  square: Square;
+  size: number;
+}
+
+/** A piece that just changed squares, handed to `animateMove`. */
+export interface PieceMoveInfo {
+  piece: PieceChar;
+  from: Square;
+  to: Square;
+  size: number;
+  /** Signed travel on screen in px, from `from` to `to`. Follows the orientation. */
+  dx: number;
+  dy: number;
+  /** The piece's element, holding what the renderer drew. It stays on `from` until `finished`. */
+  el: HTMLElement;
+}
+
+/** A running custom move animation. */
+export interface PieceMoveAnimation {
+  /** When it resolves the board puts the piece on `to`, then calls `cancel`. */
+  finished: Promise<unknown>;
+  /** Drop whatever the animation left behind. Also called if the piece unmounts first. */
+  cancel: () => void;
+}
+
 export interface SquareInfo {
   /** 0..63, a1 = 0, h1 = 7, a8 = 56. */
   index: number;
@@ -119,6 +148,19 @@ export interface ChessboardProps {
   turnTopPlayerPieces?: boolean;
   /** Per-piece renderer overrides, merged over the bundled cburnett set. */
   pieces?: Partial<Record<PieceChar, PieceRenderer>>;
+  /**
+   * Per-piece renderer that knows the square, for art that belongs to one
+   * particular piece rather than to a kind of piece. Return nothing to fall back
+   * to `pieces`.
+   */
+  renderPiece?: (info: PieceRenderInfo) => JSX.Element | null | undefined;
+  /**
+   * Replace the slide of one moving piece. Runs after the piece is mounted on
+   * `from`, only where the slide would have played (so never with `animated`
+   * off). Return nothing to keep the plain slide. The position is already the
+   * new one: this is only how the piece gets there, and the next `fen` cuts it.
+   */
+  animateMove?: (info: PieceMoveInfo) => PieceMoveAnimation | null | undefined;
   /** Custom square renderer; replaces the default colored square. */
   renderSquare?: (info: SquareInfo) => JSX.Element;
   onMove?: (e: MoveEvent) => void;

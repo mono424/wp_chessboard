@@ -18,6 +18,7 @@ import type { Orientation } from "./coords";
 import { computeRenderList, indexToSquare, parseBoard } from "./fen";
 import type { RenderPiece } from "./fen";
 import { defaultPieceMap } from "./pieces";
+import { trackMoveAnimation } from "./moveAnimation";
 import { createShortcuts } from "./shortcuts";
 import type { ChessboardProps, PieceChar, SquareInfo } from "./types";
 
@@ -61,6 +62,8 @@ export const Chessboard: Component<ChessboardProps> = (rawProps) => {
   const orientation = () => normalizeOrientation(props.orientation);
   const board = createMemo(() => parseBoard(props.fen));
   const pieceMap = createMemo(() => ({ ...defaultPieceMap, ...props.pieces }));
+  const drawPiece = (piece: PieceChar, square: string, size: number) =>
+    props.renderPiece?.({ piece, square, size }) ?? pieceMap()[piece](size);
 
   // Remount all pieces whenever fen/orientation/size changes (mirrors the
   // Flutter widget keying its layers by fen). Slide origins only apply on a
@@ -279,6 +282,23 @@ export const Chessboard: Component<ChessboardProps> = (rawProps) => {
             let el!: HTMLDivElement;
             onSettled(() => {
               if (!animate) return;
+              const custom = props.animateMove?.({
+                piece: p.piece,
+                from: indexToSquare(p.fromIndex!),
+                to: p.square,
+                size: s,
+                dx: dest.x - start.x,
+                dy: dest.y - start.y,
+                el,
+              });
+              if (custom) {
+                // Over the pieces it passes, wherever they sit in the DOM.
+                el.style.zIndex = "5";
+                return trackMoveAnimation(custom, () => {
+                  el.style.zIndex = "";
+                  el.style.transform = `translate(${dest.x}px, ${dest.y}px)`;
+                });
+              }
               el.getBoundingClientRect();
               el.style.transition = `transform ${props.animationDurationMs}ms ease-in-out`;
               el.style.transform = `translate(${dest.x}px, ${dest.y}px)`;
@@ -305,7 +325,7 @@ export const Chessboard: Component<ChessboardProps> = (rawProps) => {
                       : undefined,
                 }}
               >
-                {pieceMap()[p.piece](s)}
+                {drawPiece(p.piece, p.square, s)}
               </div>
             );
           }}
@@ -388,7 +408,7 @@ export const Chessboard: Component<ChessboardProps> = (rawProps) => {
               "z-index": "10",
             }}
           >
-            {pieceMap()[d().piece](squareSize())}
+            {drawPiece(d().piece, indexToSquare(d().fromIndex), squareSize())}
           </div>
         )}
       </Show>
