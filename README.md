@@ -53,6 +53,17 @@ ShortcutArgs(
 )
 ```
 
+### 🎨 Per-square pieces
+
+`pieceBuilder` draws a single piece in place of the `pieceMap` art, for example a piece that keeps a look of its own all game. Return `null` to draw the `pieceMap` art. The builder is told the square the piece came from in this state change, and the offset to it in the piece's own upright frame, so a returned widget can animate its own move: with `ownsTravel: true` the board places it on its square at once instead of sliding it, and draws it over the other pieces.
+
+```dart
+pieceBuilder: (args) {
+  if (args.square.toString() != 'e2') return null;
+  return SquarePiece(MyPiece(size: args.size, from: args.moved ? args.fromOffset : null), ownsTravel: true);
+},
+```
+
 ## Usage
 
 First import the `WPChessboard` widget.

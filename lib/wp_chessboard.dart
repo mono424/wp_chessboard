@@ -11,6 +11,7 @@ export 'package:wp_chessboard/models/hint_map.dart';
 export 'package:wp_chessboard/models/drop_indicator_args.dart';
 export 'package:wp_chessboard/models/shortcut_args.dart';
 export 'package:wp_chessboard/models/square.dart';
+export 'package:wp_chessboard/models/piece_square_args.dart';
 export 'package:wp_chessboard/components/hints/move_hint.dart';
 export 'package:wp_chessboard/components/shortcuts/shortcut_highlight.dart';
 
@@ -32,6 +33,7 @@ import 'package:wp_chessboard/models/drop_indicator_args.dart';
 import 'package:wp_chessboard/models/hint_map.dart';
 import 'package:wp_chessboard/models/piece_drop_event.dart';
 import 'package:wp_chessboard/models/piece_map.dart';
+import 'package:wp_chessboard/models/piece_square_args.dart';
 import 'package:wp_chessboard/models/shortcut_args.dart';
 import 'package:wp_chessboard/models/square_info.dart';
 
@@ -50,8 +52,12 @@ class WPChessboard extends StatefulWidget {
   final DropIndicatorArgs? dropIndicator;
   final ShortcutArgs? shortcuts;
 
+  /// Draws the piece on a square in place of the [pieceMap] art. Returning null
+  /// draws the [pieceMap] art. Without it the board is unchanged.
+  final SquarePieceBuilder? pieceBuilder;
 
-  const WPChessboard({Key? key, required this.size, required this.squareBuilder, required this.pieceMap, required this.controller, this.onPieceTap, this.onPieceDrop, this.onEmptyFieldTap, this.onPieceStartDrag, this.orientation = BoardOrientation.white, this.ghostOnDrag = false, this.dropIndicator, this.turnTopPlayerPieces = false, this.shortcuts}) : super(key: key);
+
+  const WPChessboard({Key? key, required this.size, required this.squareBuilder, required this.pieceMap, required this.controller, this.onPieceTap, this.onPieceDrop, this.onEmptyFieldTap, this.onPieceStartDrag, this.orientation = BoardOrientation.white, this.ghostOnDrag = false, this.dropIndicator, this.turnTopPlayerPieces = false, this.shortcuts, this.pieceBuilder}) : super(key: key);
 
   @override
   State<WPChessboard> createState() => _WPChessboardState();
@@ -247,6 +253,7 @@ class _WPChessboardState extends State<WPChessboard> {
                 orientation: widget.orientation,
                 turnTopPlayerPieces: widget.turnTopPlayerPieces,
                 pieceMap: widget.pieceMap,
+                pieceBuilder: widget.pieceBuilder,
                 state: state,
                 onPieceTap: wrappedPieceTap,
                 onPieceStartDrag: wrappedPieceStartDrag,
